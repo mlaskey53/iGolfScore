@@ -1,0 +1,9 @@
+{
+  "courses": [
+    { "name": "Countryside - Bay", "pairedWith": "Countryside - Lake", "pars": [4, 5, 4, 4, 4, 3, 4, 3, 5], "hdcps": [2, 5, 1, 9, 8, 4, 7, 6, 3] }, 
+    { "name": "Countryside - Lake", "pairedWith": "Countryside - Pine", "pars": [4, 4, 5, 3, 4, 5, 4, 3, 4], "hdcps": [7, 2, 6, 5, 9, 4, 3, 8, 1] },
+    { "name": "Countryside - Pine", "pairedWith": "Countryside - Bay", "pars": [4, 5, 4, 4, 3, 5, 4, 3, 4], "hdcps": [3, 6, 1, 7, 9, 5, 4, 8, 2] }
+  ],
+  
+  "playerNames": [ "Mike", "Steve", "Ray" ]
+}

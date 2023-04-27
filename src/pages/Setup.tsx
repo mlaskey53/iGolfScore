@@ -1,9 +1,31 @@
+import { useContext, useState, useEffect } from 'react';
+import { AppContext, Course } from '../State';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel,
-	IonSelect, IonSelectOption, IonInput } from '@ionic/react';
+	IonSelect, IonSelectOption, IonLoading } from '@ionic/react';
 import './Page.css';
 import NumInput from '../components/NumInput';
 
+interface SetupData {
+	courses: Course[];
+	playerNames: string[];
+}
+
 const Setup: React.FC = () => {
+
+//  const [ storedData, setStoredData ] = useState<StoredData>( { courses: [], playerNames: [] } );
+  const [setupData, setSetupData] = useState<SetupData>( { courses: [ { name: '<Add course>', pairedWith: '', pars: [], hdcps: [] } ], playerNames: [ '<Add player>' ] } );
+  const [showWaiting, setShowWaiting] = useState(false);
+  const [status, setStatus] = useState('');
+  
+//  const { state, dispatch } = useContext(AppContext);
+
+  // Get saved course, player names from setup data file.
+  useEffect(() => {
+	fetch( './assets/json/setup.json' )
+	  .then((response) => response.json())
+	  .then((respJSON) => { setSetupData(respJSON); setShowWaiting(false); })
+	  .catch((error) => { setStatus( 'Could not retrieve setup data: ' + error ); setShowWaiting(false); });
+  }, []);
 
   return (
     <IonPage>
@@ -32,9 +54,9 @@ const Setup: React.FC = () => {
         </IonItem>
         <IonItem>
           <IonSelect placeholder="Course">
-            <IonSelectOption value="ccc-bay">Countryside - BayHead</IonSelectOption>
-            <IonSelectOption value="ccc-lake">Countryside - Lake</IonSelectOption>
-            <IonSelectOption value="ccc-pine">Countryside - Pine</IonSelectOption>
+            { setupData.courses.map( (course:Course, idx:number) => (
+            <IonSelectOption key={idx} value={course}>{ course.name }</IonSelectOption>
+            ) )}
           </IonSelect>
         </IonItem>
         </IonList>
@@ -46,23 +68,29 @@ const Setup: React.FC = () => {
         </IonItem>
         <IonItem>
           <IonSelect placeholder="Player 1">
-            <IonSelectOption value="p1">Mike</IonSelectOption>
-            <IonSelectOption value="p2">Larry</IonSelectOption>
-            <IonSelectOption value="p3">Steve</IonSelectOption>
+            { setupData.playerNames.map( (name:string, idx:number) => (
+            <IonSelectOption value={name}>{ name }</IonSelectOption>
+            ) )}
           </IonSelect>
           <IonLabel>Hdcp:</IonLabel>
           <NumInput name="hdcp1"></NumInput>
         </IonItem>
-         <IonItem>
+        <IonItem>
           <IonSelect placeholder="Player 2">
-            <IonSelectOption value="p1">Mike</IonSelectOption>
-            <IonSelectOption value="p2">Larry</IonSelectOption>
-            <IonSelectOption value="p3">Steve</IonSelectOption>
+            { setupData.playerNames.map( (name:string, idx:number) => (
+            <IonSelectOption value={name}>{ name }</IonSelectOption>
+            ) )}
           </IonSelect>
           <IonLabel>Hdcp:</IonLabel>
           <NumInput name="hdcp2"></NumInput>
         </IonItem>
+        <IonItem>
+          <IonLabel>{status}</IonLabel>
+        </IonItem>
        </IonList>
+       
+       <IonLoading isOpen={showWaiting} onDidDismiss={() => setShowWaiting(false)} message={'Processing...'} duration={5000} />
+       
       </IonContent>
     </IonPage>
   );
