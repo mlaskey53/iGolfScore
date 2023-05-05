@@ -12,6 +12,8 @@ interface SetupData {
 
 const Setup: React.FC = () => {
 
+  const { state, dispatch } = useContext(AppContext);
+
 //  const [ storedData, setStoredData ] = useState<StoredData>( { courses: [], playerNames: [] } );
   const [setupData, setSetupData] = useState<SetupData>( { courses: [ { name: '<Add course>', pairedWith: '', pars: [], hdcps: [] } ], playerNames: [ '<Add player>' ] } );
   const [showWaiting, setShowWaiting] = useState(false);
@@ -53,13 +55,14 @@ const Setup: React.FC = () => {
           </IonLabel>
         </IonItem>
         <IonItem>
-          <IonSelect placeholder="Course">
+          <IonSelect placeholder="Course" onIonChange={(e) => dispatch( {type: "setCourse", newval: e.detail.value} )}>
             { setupData.courses.map( (course:Course, idx:number) => (
             <IonSelectOption key={idx} value={course}>{ course.name }</IonSelectOption>
             ) )}
           </IonSelect>
         </IonItem>
         </IonList>
+        
         <IonList>
         <IonItem>
           <IonLabel>
@@ -72,8 +75,8 @@ const Setup: React.FC = () => {
             <IonSelectOption value={name}>{ name }</IonSelectOption>
             ) )}
           </IonSelect>
-          <IonLabel>Hdcp:</IonLabel>
-          <NumInput name="hdcp1"></NumInput>
+          <IonLabel slot="end">Hdcp:</IonLabel>
+          <NumInput name="hdcp1" slot="end"></NumInput>
         </IonItem>
         <IonItem>
           <IonSelect placeholder="Player 2">
@@ -81,8 +84,8 @@ const Setup: React.FC = () => {
             <IonSelectOption value={name}>{ name }</IonSelectOption>
             ) )}
           </IonSelect>
-          <IonLabel>Hdcp:</IonLabel>
-          <NumInput name="hdcp2"></NumInput>
+          <IonLabel slot="end">Hdcp:</IonLabel>
+          <NumInput name="hdcp2" slot="end"></NumInput>
         </IonItem>
         <IonItem>
           <IonLabel>{status}</IonLabel>

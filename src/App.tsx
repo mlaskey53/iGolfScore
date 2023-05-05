@@ -3,7 +3,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import Menu from './components/Menu';
 import Setup from './pages/Setup';
-import Page from './pages/Page';
+import Game from './pages/Game';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -40,7 +40,7 @@ const App: React.FC = () => {
               <Setup />
             </Route>
             <Route path="/page/Game" exact={true}>
-              <Page />
+              <Game />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>
