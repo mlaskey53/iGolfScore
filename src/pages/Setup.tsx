@@ -1,9 +1,10 @@
 import { useContext, useState, useEffect } from 'react';
-import { AppContext, Course } from '../State';
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel,
-	IonSelect, IonSelectOption, IonLoading } from '@ionic/react';
+import { AppContext, Course, Player } from '../State';
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButton, IonIcon,
+	IonSelect, IonSelectOption, IonLoading, useIonModal } from '@ionic/react';
+import { add } from 'ionicons/icons';
 import './Page.css';
-import NumInput from '../components/NumInput';
+import SetPlayerModal from '../components/SetPlayerModal';
 
 interface SetupData {
 	courses: Course[];
@@ -19,8 +20,6 @@ const Setup: React.FC = () => {
   const [showWaiting, setShowWaiting] = useState(false);
   const [status, setStatus] = useState('');
   
-//  const { state, dispatch } = useContext(AppContext);
-
   // Get saved course, player names from setup data file.
   useEffect(() => {
 	fetch( './assets/json/setup.json' )
@@ -28,6 +27,25 @@ const Setup: React.FC = () => {
 	  .then((respJSON) => { setSetupData(respJSON); setShowWaiting(false); })
 	  .catch((error) => { setStatus( 'Could not retrieve setup data: ' + error ); setShowWaiting(false); });
   }, []);
+  
+  // Functions for Add/Edit Player modal:
+  const handleSavePlayer = ( player: Player ) => {
+	// Update state with new/changed player
+	state.players.push( player );
+	dismissSetPlayer();
+  }
+  
+  const handleSetPlayerDismiss = () => {
+	dismissSetPlayer();
+  }
+  
+  const [presentSetPlayer, dismissSetPlayer] = useIonModal( SetPlayerModal, {
+    modalTitle: "Add Player",
+    playerNames: setupData.playerNames,
+    player: { name: '', hdcp: 0 },
+    onDismiss: handleSetPlayerDismiss,
+    onSave: handleSavePlayer
+  } )
 
   return (
     <IonPage>
@@ -55,7 +73,7 @@ const Setup: React.FC = () => {
           </IonLabel>
         </IonItem>
         <IonItem>
-          <IonSelect placeholder="Course" onIonChange={(e) => dispatch( {type: "setCourse", newval: e.detail.value} )}>
+          <IonSelect placeholder="Course" interface="action-sheet" onIonChange={(e) => dispatch( {type: "setCourse", newval: e.detail.value} )}>
             { setupData.courses.map( (course:Course, idx:number) => (
             <IonSelectOption key={idx} value={course}>{ course.name }</IonSelectOption>
             ) )}
@@ -65,27 +83,21 @@ const Setup: React.FC = () => {
         
         <IonList>
         <IonItem>
-          <IonLabel>
-            <h2>Select Players:</h2>
-          </IonLabel>
+           <IonLabel>
+             <h2>Players:</h2>
+           </IonLabel>
+           <IonButton slot='end' onClick={() => { presentSetPlayer() }}>
+             <IonIcon icon={add} />
+           </IonButton>
         </IonItem>
         <IonItem>
-          <IonSelect placeholder="Player 1">
-            { setupData.playerNames.map( (name:string, idx:number) => (
-            <IonSelectOption value={name}>{ name }</IonSelectOption>
+          <IonList>
+            { state.players.map( (item: Player, idx:number) => (
+	        <IonItem>
+              <IonLabel>Player {idx + 1}: {item.name}    (Hdcp = {item.hdcp})</IonLabel>
+            </IonItem>
             ) )}
-          </IonSelect>
-          <IonLabel slot="end">Hdcp:</IonLabel>
-          <NumInput name="hdcp1" slot="end"></NumInput>
-        </IonItem>
-        <IonItem>
-          <IonSelect placeholder="Player 2">
-            { setupData.playerNames.map( (name:string, idx:number) => (
-            <IonSelectOption value={name}>{ name }</IonSelectOption>
-            ) )}
-          </IonSelect>
-          <IonLabel slot="end">Hdcp:</IonLabel>
-          <NumInput name="hdcp2" slot="end"></NumInput>
+          </IonList>
         </IonItem>
         <IonItem>
           <IonLabel>{status}</IonLabel>

@@ -1,6 +1,6 @@
 import React, { createContext, useReducer } from "react";
 
-// Holds course data for 9 holes (so we can handle 27-hole corses and play in reverse order.)  
+// Holds course data for 9 holes (so we can handle 27-hole courses and play in reverse order.)  
 export type Course = {
   name: string;
   pairedWith: string;
