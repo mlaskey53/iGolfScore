@@ -1,7 +1,7 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
-  IonList, IonItem, IonLabel } from '@ionic/react';
+  IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/react';
 import { useContext, useState } from 'react';
-import { AppContext, Course } from '../State';
+import { AppContext, Course, Player } from '../State';
 import './Page.css';
 
 const Page: React.FC = () => {
@@ -29,11 +29,19 @@ const Page: React.FC = () => {
         </IonHeader>
         
         <IonList>
-        <IonItem>
-          <IonLabel>
-            <h2>Course:  {state.course.name}</h2>
-          </IonLabel>
-        </IonItem>
+          <IonItem>
+            <IonLabel> <h2>Course:  {state.course.name}</h2> </IonLabel>
+          </IonItem>
+          <IonItem>
+          <IonGrid>
+            { state.players.map( (item: Player, idx: number) => (
+	        <IonRow>
+	          <IonCol size="3"><IonLabel><h3>Player {idx + 1}: {item.name}</h3></IonLabel></IonCol>
+            </IonRow>
+            ) )}
+          </IonGrid>
+
+          </IonItem>
         </IonList>
         
       </IonContent>

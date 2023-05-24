@@ -1,8 +1,8 @@
 import { useContext, useState, useEffect } from 'react';
 import { AppContext, Course, Player } from '../State';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButton, IonIcon,
-	IonSelect, IonSelectOption, IonLoading, useIonModal } from '@ionic/react';
-import { add } from 'ionicons/icons';
+	IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonLoading, useIonModal } from '@ionic/react';
+import { personAdd, personRemove, create } from 'ionicons/icons';
 import './Page.css';
 import SetPlayerModal from '../components/SetPlayerModal';
 
@@ -20,6 +20,8 @@ const Setup: React.FC = () => {
   const [showWaiting, setShowWaiting] = useState(false);
   const [status, setStatus] = useState('');
   
+  const [playerIdx, setPlayerIdx] = useState(0);
+  
   // Get saved course, player names from setup data file.
   useEffect(() => {
 	fetch( './assets/json/setup.json' )
@@ -28,24 +30,47 @@ const Setup: React.FC = () => {
 	  .catch((error) => { setStatus( 'Could not retrieve setup data: ' + error ); setShowWaiting(false); });
   }, []);
   
-  // Functions for Add/Edit Player modal:
-  const handleSavePlayer = ( player: Player ) => {
-	// Update state with new/changed player
+  // Functions for Add Player modal:
+  const handleAddPlayer = ( player: Player ) => {
+	// Update state with new player
 	state.players.push( player );
-	dismissSetPlayer();
+	dismissAddPlayer();
   }
   
-  const handleSetPlayerDismiss = () => {
-	dismissSetPlayer();
+  const handleAddPlayerDismiss = () => {
+	dismissAddPlayer();
   }
   
-  const [presentSetPlayer, dismissSetPlayer] = useIonModal( SetPlayerModal, {
+  const [presentAddPlayer, dismissAddPlayer] = useIonModal( SetPlayerModal, {
     modalTitle: "Add Player",
     playerNames: setupData.playerNames,
-    player: { name: '', hdcp: 0 },
-    onDismiss: handleSetPlayerDismiss,
-    onSave: handleSavePlayer
+    player: { name: 'Select name', hdcp: 0 },
+    onDismiss: handleAddPlayerDismiss,
+    onSave: handleAddPlayer
   } )
+
+  // Functions for Edit Player modal:
+  const handleEditPlayer = ( player: Player ) => {
+	// Update state with changed player
+	state.players[ playerIdx ] = player;
+	dismissEditPlayer();
+  }
+  
+  const handleEditPlayerDismiss = () => {
+	dismissEditPlayer();
+  }
+  
+  const [presentEditPlayer, dismissEditPlayer] = useIonModal( SetPlayerModal, {
+    modalTitle: "Edit Player",
+    playerNames: setupData.playerNames,
+    player: state.players[ playerIdx ],
+    onDismiss: handleEditPlayerDismiss,
+    onSave: handleEditPlayer
+  } )
+  
+  const removePlayer = () => {
+	state.players.splice( playerIdx, 1 );
+  }
 
   return (
     <IonPage>
@@ -86,18 +111,21 @@ const Setup: React.FC = () => {
            <IonLabel>
              <h2>Players:</h2>
            </IonLabel>
-           <IonButton slot='end' onClick={() => { presentSetPlayer() }}>
-             <IonIcon icon={add} />
+           <IonButton slot='end' onClick={() => { presentAddPlayer() }}>
+             <IonIcon icon={personAdd} />
            </IonButton>
         </IonItem>
         <IonItem>
-          <IonList>
-            { state.players.map( (item: Player, idx:number) => (
-	        <IonItem>
-              <IonLabel>Player {idx + 1}: {item.name}    (Hdcp = {item.hdcp})</IonLabel>
-            </IonItem>
+          <IonGrid>
+            { state.players.map( (item: Player, idx: number) => (
+	        <IonRow>
+	          <IonCol size="3"><IonLabel><h3>Player {idx + 1}:</h3></IonLabel></IonCol>
+              <IonCol size="5"><IonLabel><h2>{item.name}    (Hdcp = {item.hdcp})</h2></IonLabel></IonCol>
+              <IonCol><IonButton onClick={() => { setPlayerIdx(idx); presentEditPlayer() }}><IonIcon icon={create} /></IonButton></IonCol>
+              <IonCol><IonButton onClick={() => { setPlayerIdx(idx); removePlayer() }}><IonIcon icon={personRemove} /></IonButton></IonCol>
+            </IonRow>
             ) )}
-          </IonList>
+          </IonGrid>
         </IonItem>
         <IonItem>
           <IonLabel>{status}</IonLabel>
