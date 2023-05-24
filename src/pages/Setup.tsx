@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { AppContext, Course, Player } from '../State';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButton, IonIcon,
-	IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonLoading, useIonModal } from '@ionic/react';
+	IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonLoading, useIonModal, IonAlert } from '@ionic/react';
 import { personAdd, personRemove, create } from 'ionicons/icons';
 import './Page.css';
 import SetPlayerModal from '../components/SetPlayerModal';
@@ -19,8 +19,12 @@ const Setup: React.FC = () => {
   const [setupData, setSetupData] = useState<SetupData>( { courses: [ { name: '<Add course>', pairedWith: '', pars: [], hdcps: [] } ], playerNames: [ '<Add player>' ] } );
   const [showWaiting, setShowWaiting] = useState(false);
   const [status, setStatus] = useState('');
-  
+
+  // Track selected players index for edit/remove.  
   const [playerIdx, setPlayerIdx] = useState(0);
+  
+  // Local state to show remove player confirmation alert.
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
   
   // Get saved course, player names from setup data file.
   useEffect(() => {
@@ -122,7 +126,7 @@ const Setup: React.FC = () => {
 	          <IonCol size="3"><IonLabel><h3>Player {idx + 1}:</h3></IonLabel></IonCol>
               <IonCol size="5"><IonLabel><h2>{item.name}    (Hdcp = {item.hdcp})</h2></IonLabel></IonCol>
               <IonCol><IonButton onClick={() => { setPlayerIdx(idx); presentEditPlayer() }}><IonIcon icon={create} /></IonButton></IonCol>
-              <IonCol><IonButton onClick={() => { setPlayerIdx(idx); removePlayer() }}><IonIcon icon={personRemove} /></IonButton></IonCol>
+              <IonCol><IonButton onClick={() => { setPlayerIdx(idx); setShowRemoveConfirm(true); }}><IonIcon icon={personRemove} /></IonButton></IonCol>
             </IonRow>
             ) )}
           </IonGrid>
@@ -134,6 +138,13 @@ const Setup: React.FC = () => {
        
        <IonLoading isOpen={showWaiting} onDidDismiss={() => setShowWaiting(false)} message={'Processing...'} duration={5000} />
        
+       <IonAlert isOpen={showRemoveConfirm} onDidDismiss={() => setShowRemoveConfirm(false)}
+          header={'Remove Player?'} message={"Remove player from Game."}
+          buttons={[
+            { text: 'Cancel', role: 'cancel', cssClass: 'secondary', id: 'cancel-button', handler: () => {} },
+            { text: 'OK', id: 'confirm-button', handler: () => { removePlayer(); } }
+          ]}
+       />
       </IonContent>
     </IonPage>
   );
