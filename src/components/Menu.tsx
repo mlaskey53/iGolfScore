@@ -22,8 +22,8 @@ const appPages: AppPage[] = [
     mdIcon: settingsSharp
   },
   {
-    title: 'Game',
-    url: '/page/Game',
+    title: 'Round',
+    url: '/page/Round',
     iosIcon: golfOutline,
     mdIcon: golfSharp
   },

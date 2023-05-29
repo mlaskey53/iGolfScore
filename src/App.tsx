@@ -3,7 +3,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import Menu from './components/Menu';
 import Setup from './pages/Setup';
-import Game from './pages/Game';
+import Round from './pages/Round';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -39,8 +39,8 @@ const App: React.FC = () => {
             <Route path="/page/Setup" exact={true}>
               <Setup />
             </Route>
-            <Route path="/page/Game" exact={true}>
-              <Game />
+            <Route path="/page/Round" exact={true}>
+              <Round />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>
