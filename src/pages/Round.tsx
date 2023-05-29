@@ -2,6 +2,7 @@ import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, Io
   IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/react';
 import { useContext, useState } from 'react';
 import { AppContext, Course, Player } from '../State';
+import NumInput from '../components/NumInput';
 import './Page.css';
 
 const Round: React.FC = () => {
@@ -32,12 +33,9 @@ const Round: React.FC = () => {
         
         <IonList>
           <IonItem>
-            <IonGrid>
-    	        <IonRow>
-    	          <IonCol><IonLabel> <h2>Course: {state.course.name}</h2> </IonLabel></IonCol>
-    	          <IonCol><IonLabel> <h2>Hole: {hole}</h2> </IonLabel></IonCol>
-                </IonRow>
-            </IonGrid>
+    	    <IonLabel> <h2>{state.course.name}</h2> </IonLabel>
+            <IonLabel slot="end"> <h2>Hole: </h2> </IonLabel>
+            <NumInput name="hole" slot="end" init={1} min={1} max={18} setValue={ (val: number) => { setHole(val) }}></NumInput>
           </IonItem>
           <IonItem>
             <IonGrid>
