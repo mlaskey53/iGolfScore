@@ -39,7 +39,7 @@ let reducer = (state: AppState, action: { type: string; newval: any; }) => {
       return { ...state, game1: action.newval }
     case "setGame2":
       return { ...state, game2: action.newval}
-	case "setPlayer":
+	case "setPlayers":
 	  return { ...state, players: action.newval}
   }
   return state;

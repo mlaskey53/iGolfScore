@@ -15,16 +15,17 @@ const Setup: React.FC = () => {
 
   const { state, dispatch } = useContext(AppContext);
 
-//  const [ storedData, setStoredData ] = useState<StoredData>( { courses: [], playerNames: [] } );
+  // Local state to manage loading setup info.
   const [setupData, setSetupData] = useState<SetupData>( { courses: [ { name: '<Add course>', pairedWith: '', pars: [], hdcps: [] } ], playerNames: [ '<Add player>' ] } );
   const [showWaiting, setShowWaiting] = useState(false);
   const [status, setStatus] = useState('');
-
+  
   // Track selected players index for edit/remove.  
   const [playerIdx, setPlayerIdx] = useState(0);
   
-  // Local state to show remove player confirmation alert.
+  // Local state to manage various alert pop-ups.
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [showPlayerLimit, setShowPlayerLimit] = useState(false);
   
   // Get saved course, player names from setup data file.
   useEffect(() => {
@@ -38,6 +39,7 @@ const Setup: React.FC = () => {
   const handleAddPlayer = ( player: Player ) => {
 	// Update state with new player
 	state.players.push( player );
+	dispatch( { type: 'setPlayers', newval: state.players } );
 	dismissAddPlayer();
   }
   
@@ -57,6 +59,7 @@ const Setup: React.FC = () => {
   const handleEditPlayer = ( player: Player ) => {
 	// Update state with changed player
 	state.players[ playerIdx ] = player;
+	dispatch( { type: 'setPlayers', newval: state.players } );
 	dismissEditPlayer();
   }
   
@@ -74,6 +77,7 @@ const Setup: React.FC = () => {
   
   const removePlayer = () => {
 	state.players.splice( playerIdx, 1 );
+	dispatch( { type: 'setPlayers', newval: state.players } );
   }
 
   return (
@@ -115,7 +119,7 @@ const Setup: React.FC = () => {
            <IonLabel>
              <h2>Players:</h2>
            </IonLabel>
-           <IonButton slot='end' onClick={() => { presentAddPlayer() }}>
+           <IonButton slot='end' onClick={() => { if (state.players.length < 5) { presentAddPlayer() } else { setShowPlayerLimit(true) } }}>
              <IonIcon icon={personAdd} />
            </IonButton>
         </IonItem>
@@ -145,6 +149,13 @@ const Setup: React.FC = () => {
             { text: 'OK', id: 'confirm-button', handler: () => { removePlayer(); } }
           ]}
        />
+       <IonAlert isOpen={showPlayerLimit} onDidDismiss={() => setShowPlayerLimit(false)}
+          header={'Player limit reached'} message={"Up to 5 players allowed."}
+          buttons={[
+            { text: 'OK', id: 'ok-button', handler: () => {} }
+          ]}
+       />
+       
       </IonContent>
     </IonPage>
   );
