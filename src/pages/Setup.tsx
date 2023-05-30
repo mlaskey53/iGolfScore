@@ -4,6 +4,7 @@ import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, Io
 	IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonLoading, useIonModal, IonAlert } from '@ionic/react';
 import { personAdd, personRemove, create } from 'ionicons/icons';
 import './Page.css';
+import { Game } from "../model/Game";
 import SetPlayerModal from '../components/SetPlayerModal';
 
 interface SetupData {
@@ -101,12 +102,8 @@ const Setup: React.FC = () => {
         
         <IonList>
         <IonItem>
-          <IonLabel>
-            <h2>Select Course:</h2>
-          </IonLabel>
-        </IonItem>
-        <IonItem>
-          <IonSelect placeholder="Course" interface="action-sheet" onIonChange={(e) => dispatch( {type: "setCourse", newval: e.detail.value} )}>
+          <IonLabel><h2>Course:</h2></IonLabel>
+          <IonSelect placeholder="Select course" slot="end" interface="action-sheet" onIonChange={(e) => dispatch( {type: "setCourse", newval: e.detail.value} )}>
             { setupData.courses.map( (course:Course, idx:number) => (
             <IonSelectOption key={idx} value={course}>{ course.name }</IonSelectOption>
             ) )}
@@ -135,11 +132,32 @@ const Setup: React.FC = () => {
             ) )}
           </IonGrid>
         </IonItem>
+       </IonList>
+       
+        <IonList>
+        <IonItem>
+          <IonLabel><h2>Game 1:</h2></IonLabel>
+          <IonSelect slot="end" placeholder={Game.Types[Game.NoGame]} interface="action-sheet"
+              onIonChange={(e) => dispatch( {type: "setGame1", newval: new Game( e.detail.value )} )}>
+            { Game.Types.map( (game:string, idx:number) => (
+            <IonSelectOption key={idx} value={idx}>{ game }</IonSelectOption>
+            ) )}
+          </IonSelect>
+        </IonItem>
+        <IonItem>
+          <IonLabel><h2>Game 2:</h2></IonLabel>
+          <IonSelect slot="end" placeholder={Game.Types[Game.NoGame]} interface="action-sheet"
+              onIonChange={(e) => dispatch( {type: "setGame2", newval: new Game( e.detail.value )} )}>
+            { Game.Types.map( (game:string, idx:number) => (
+            <IonSelectOption key={idx} value={idx}>{ game }</IonSelectOption>
+            ) )}
+          </IonSelect>
+        </IonItem>
         <IonItem>
           <IonLabel>{status}</IonLabel>
         </IonItem>
-       </IonList>
-       
+        </IonList>
+
        <IonLoading isOpen={showWaiting} onDidDismiss={() => setShowWaiting(false)} message={'Processing...'} duration={5000} />
        
        <IonAlert isOpen={showRemoveConfirm} onDidDismiss={() => setShowRemoveConfirm(false)}

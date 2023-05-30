@@ -1,4 +1,5 @@
 import React, { createContext, useReducer } from "react";
+import { Game } from "./model/Game";
 
 // Holds course data for 9 holes (so we can handle 27-hole courses and play in reverse order.)  
 export type Course = {
@@ -16,15 +17,15 @@ export type Player = {
 
 export type AppState = {
   course: Course;
-  game1: string;
-  game2: string;
+  game1: Game;
+  game2: Game;
   players: Player[];
 }
 
 const initialState: AppState = {
   course: { name: 'Not set', pairedWith: 'Not set', pars: [], hdcps: [] },
-  game1: '',
-  game2: '',
+  game1: new Game(),
+  game2: new Game(),
   players: []
 }
 
