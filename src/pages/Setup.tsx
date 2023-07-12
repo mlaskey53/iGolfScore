@@ -4,7 +4,7 @@ import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, Io
 	IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonLoading, useIonModal, IonAlert } from '@ionic/react';
 import { personAdd, personRemove, create } from 'ionicons/icons';
 import './Page.css';
-import { Game } from "../model/Game";
+import { Game, GameType } from "../model/Game";
 import SetPlayerModal from '../components/SetPlayerModal';
 
 interface SetupData {
@@ -137,19 +137,19 @@ const Setup: React.FC = () => {
         <IonList>
         <IonItem>
           <IonLabel><h2>Game 1:</h2></IonLabel>
-          <IonSelect slot="end" placeholder={Game.Types[Game.NoGame]} interface="action-sheet"
+          <IonSelect slot="end" placeholder={Game.Types[0].name} interface="action-sheet"
               onIonChange={(e) => dispatch( {type: "setGame1", newval: new Game( e.detail.value )} )}>
-            { Game.Types.map( (game:string, idx:number) => (
-            <IonSelectOption key={idx} value={idx}>{ game }</IonSelectOption>
+            { Game.Types.map( (game: GameType, idx: number) => (
+            <IonSelectOption key={idx} value={idx}>{ game.name }</IonSelectOption>
             ) )}
           </IonSelect>
         </IonItem>
         <IonItem>
           <IonLabel><h2>Game 2:</h2></IonLabel>
-          <IonSelect slot="end" placeholder={Game.Types[Game.NoGame]} interface="action-sheet"
+          <IonSelect slot="end" placeholder={Game.Types[0].name} interface="action-sheet"
               onIonChange={(e) => dispatch( {type: "setGame2", newval: new Game( e.detail.value )} )}>
-            { Game.Types.map( (game:string, idx:number) => (
-            <IonSelectOption key={idx} value={idx}>{ game }</IonSelectOption>
+            { Game.Types.map( (game: GameType, idx: number) => (
+            <IonSelectOption key={idx} value={idx}>{ game.name }</IonSelectOption>
             ) )}
           </IonSelect>
         </IonItem>

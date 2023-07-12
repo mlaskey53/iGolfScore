@@ -12,6 +12,8 @@ const Round: React.FC = () => {
   const { state, dispatch } = useContext(AppContext);
   
   const [hole, setHole] = useState(1);
+  const [score, setScore] = useState(1);
+  const [bonus, setBonus] = useState(0);
   
   return (
     <IonPage>
@@ -37,15 +39,14 @@ const Round: React.FC = () => {
             <IonLabel slot="end"> <h2>Hole: </h2> </IonLabel>
             <NumInput name="hole" slot="end" init={1} min={1} max={18} setValue={ (val: number) => { setHole(val) }}></NumInput>
           </IonItem>
+          { state.players.map( (item: Player, idx: number) => (
           <IonItem>
-            <IonGrid>
-              { state.players.map( (item: Player, idx: number) => (
-    	        <IonRow>
-    	          <IonCol size="3"><IonLabel><h3>Player {idx + 1}: {item.name}</h3></IonLabel></IonCol>
-                </IonRow>
-              ) )}
-            </IonGrid>
+ 	        <IonLabel slot="start" position="fixed"><h2>{item.name}: </h2></IonLabel>
+            <NumInput name="score" slot="start" init={4} min={1} max={9} setValue={ setScore }></NumInput>
+ 	        <IonLabel slot="end"><h3>Bonus: </h3></IonLabel>
+            <NumInput name="bonus" slot="end" init={item.bonus} min={0} max={9} setValue={ setBonus }></NumInput>
           </IonItem>
+          ) )}
         </IonList>
         
       </IonContent>
