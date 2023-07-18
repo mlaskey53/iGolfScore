@@ -2,10 +2,11 @@ import { useContext, useState, useEffect } from 'react';
 import { AppContext, Course, Player } from '../State';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButton, IonIcon,
 	IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonLoading, useIonModal, IonAlert } from '@ionic/react';
-import { personAdd, personRemove, create } from 'ionicons/icons';
+import { personAdd, personRemove, create, golf } from 'ionicons/icons';
 import './Page.css';
-import { Game, GameType } from "../model/Game";
+import { Game } from "../model/Game";
 import SetPlayerModal from '../components/SetPlayerModal';
+import SetGameModal from '../components/SetGameModal';
 
 interface SetupData {
 	courses: Course[];
@@ -27,6 +28,7 @@ const Setup: React.FC = () => {
   // Local state to manage various alert pop-ups.
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
   const [showPlayerLimit, setShowPlayerLimit] = useState(false);
+  const [showGameLimit, setShowGameLimit] = useState(false);
   
   // Get saved course, player names from setup data file.
   useEffect(() => {
@@ -80,6 +82,23 @@ const Setup: React.FC = () => {
 	state.players.splice( playerIdx, 1 );
 	dispatch( { type: 'setPlayers', newval: state.players } );
   }
+
+  const handleAddGame = ( game: Game ) => {
+	state.games.push( game );
+	dispatch( { type: "setGames", newval: state.games } );
+	dismissAddGame();	
+  }
+  
+  const handleAddGameDismiss = () => {
+	dismissAddGame();
+  }
+  
+  const [presentAddGame, dismissAddGame] = useIonModal( SetGameModal, {
+    modalTitle: "Add Game",
+    players: state.players,
+    onDismiss: handleAddGameDismiss,
+    onSave: handleAddGame
+  } )
 
   return (
     <IonPage>
@@ -136,23 +155,22 @@ const Setup: React.FC = () => {
        
         <IonList>
         <IonItem>
-          <IonLabel><h2>Game 1:</h2></IonLabel>
-          <IonSelect slot="end" placeholder={Game.Types[0].name} interface="action-sheet"
-              onIonChange={(e) => dispatch( {type: "setGame1", newval: new Game( e.detail.value )} )}>
-            { Game.Types.map( (game: GameType, idx: number) => (
-            <IonSelectOption key={idx} value={idx}>{ game.name }</IonSelectOption>
-            ) )}
-          </IonSelect>
+          <IonLabel><h2>Games:</h2></IonLabel>
+           <IonButton slot='end' onClick={() => { if (state.games.length < 3) { presentAddGame() } else { setShowGameLimit(true) } }}>
+             <IonIcon icon={golf} />
+           </IonButton>
         </IonItem>
         <IonItem>
-          <IonLabel><h2>Game 2:</h2></IonLabel>
-          <IonSelect slot="end" placeholder={Game.Types[0].name} interface="action-sheet"
-              onIonChange={(e) => dispatch( {type: "setGame2", newval: new Game( e.detail.value )} )}>
-            { Game.Types.map( (game: GameType, idx: number) => (
-            <IonSelectOption key={idx} value={idx}>{ game.name }</IonSelectOption>
+          <IonGrid>
+            { state.games.map( (game: Game, idx: number) => (
+	        <IonRow>
+	          <IonCol size="3"><IonLabel><h3>Game {idx + 1}:</h3></IonLabel></IonCol>
+              <IonCol size="5"><IonLabel><h2>{game.getName()}    ({ game.getPlayerNames(state.players) })</h2></IonLabel></IonCol>
+            </IonRow>
             ) )}
-          </IonSelect>
+          </IonGrid>
         </IonItem>
+
         <IonItem>
           <IonLabel>{status}</IonLabel>
         </IonItem>
@@ -169,6 +187,12 @@ const Setup: React.FC = () => {
        />
        <IonAlert isOpen={showPlayerLimit} onDidDismiss={() => setShowPlayerLimit(false)}
           header={'Player limit reached'} message={"Up to 5 players allowed."}
+          buttons={[
+            { text: 'OK', id: 'ok-button', handler: () => {} }
+          ]}
+       />
+       <IonAlert isOpen={showGameLimit} onDidDismiss={() => setShowGameLimit(false)}
+          header={'Game limit reached'} message={"Up to 3 games allowed."}
           buttons={[
             { text: 'OK', id: 'ok-button', handler: () => {} }
           ]}

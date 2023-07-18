@@ -17,15 +17,13 @@ export type Player = {
 
 export type AppState = {
   course: Course;
-  game1: Game;
-  game2: Game;
+  games: Game[];
   players: Player[];
 }
 
 const initialState: AppState = {
   course: { name: 'Not set', pairedWith: 'Not set', pars: [], hdcps: [] },
-  game1: new Game(),
-  game2: new Game(),
+  games: [],
   players: []
 }
 
@@ -36,10 +34,8 @@ let reducer = (state: AppState, action: { type: string; newval: any; }) => {
   switch(action.type) {
     case "setCourse":
       return { ...state, course: action.newval }
-    case "setGame1":
-      return { ...state, game1: action.newval }
-    case "setGame2":
-      return { ...state, game2: action.newval}
+    case "setGames":
+      return { ...state, games: action.newval }
 	case "setPlayers":
 	  return { ...state, players: action.newval}
   }
