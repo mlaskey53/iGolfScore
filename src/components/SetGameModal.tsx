@@ -12,8 +12,9 @@ export const SetGameModal = (
     onSave: ( arg: Game ) => void;
   }) => {
 
-  // Track selected game(s).
+  // Track selected game(s) and select players prompt.
   const [game, setGame] = useState<Game>( new Game() );
+  const [playerPrompt, setPlayerPrompt] = useState( '' );
   
   return(
   <IonPage>
@@ -31,7 +32,8 @@ export const SetGameModal = (
         <IonItem>
           <IonLabel><h2>Select Game Type:</h2></IonLabel>
           <IonSelect slot="end" placeholder={Game.Types[0].name} interface="action-sheet"
-              onIonChange={(e) => { game.setGame( e.detail.value ); setGame( game ) } } >
+              onIonChange={(e) => { game.setGame( e.detail.value ); setGame( game ); 
+                 setPlayerPrompt( game.getSelectPlayersPrompt( players ) ) } } >
             { Game.Types.map( (gameTyp: GameType, idx: number) => (
             <IonSelectOption key={idx} value={idx}>{ gameTyp.name }</IonSelectOption>
             ) )}
@@ -39,8 +41,8 @@ export const SetGameModal = (
         </IonItem>
 
         <IonItem>
-          <IonSelect placeholder={ (game.getPlayersReqd() > 0 ) ? "Select " + game.getPlayersReqd() + " Players" : "" }
-              multiple={true} 
+          <IonLabel><h2>{ playerPrompt }</h2></IonLabel>
+          <IonSelect placeholder="" multiple={true} 
               onIonChange={(e) => { game.setPlayers( e.detail.value ) }}>
             { players.map( (player: Player, idx: number) => (
             <IonSelectOption key={idx} value={idx}>{player.name}</IonSelectOption>
@@ -48,8 +50,6 @@ export const SetGameModal = (
           </IonSelect>
         </IonItem>
         
-        <IonItem><IonLabel>{JSON.stringify( game.getPlayers() )}</IonLabel></IonItem>
-      
       </IonList>
       <IonButton expand="block" onClick={() => onSave( game )}>Save</IonButton>
     </IonContent>

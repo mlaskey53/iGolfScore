@@ -40,12 +40,23 @@ export class Game {
 		
 	getPlayerNames( players: Player[] ) {
 		let names = '';
-		this.playerIDs.map( (plyrId: number ) => ( names += "," + players[plyrId].name ) );
-		return names.slice(1);
+		this.playerIDs.map( (plyrId: number ) => ( names += ", " + players[plyrId].name ) );
+		return names.slice(2);
 	}
 	
 	getPlayersReqd() {
 		return this.gameType.playersReqd;
+	}
+	
+	getSelectPlayersPrompt( players: Player[] ) {
+		if ( players.length < this.gameType.playersReqd ) {
+			return "At least " + this.gameType.playersReqd + " required for this game.";
+		}
+		if ( this.gameType.playersReqd === 0 ) {
+			for ( var i = 0;  i < players.length;  i++ ) { this.playerIDs[i] = i; }
+			return "All players selected.";
+		}
+		return "Select " + this.getPlayersReqd() + " Players:";
 	}
 };
 
