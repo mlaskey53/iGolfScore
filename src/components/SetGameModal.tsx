@@ -15,6 +15,7 @@ export const SetGameModal = (
   // Track selected game(s) and select players prompt.
   const [game, setGame] = useState<Game>( new Game() );
   const [playerPrompt, setPlayerPrompt] = useState( '' );
+  const [showSelectPlayers, setShowSelectPlayers] = useState( false );
   
   return(
   <IonPage>
@@ -33,7 +34,7 @@ export const SetGameModal = (
           <IonLabel><h2>Select Game Type:</h2></IonLabel>
           <IonSelect slot="end" placeholder={Game.Types[0].name} interface="action-sheet"
               onIonChange={(e) => { game.setGame( e.detail.value ); setGame( game ); 
-                 setPlayerPrompt( game.getSelectPlayersPrompt( players ) ) } } >
+                 setPlayerPrompt( game.getSelectPlayersPrompt( players ) ); setShowSelectPlayers( game.getShouldSelectPlayers() ) } } >
             { Game.Types.map( (gameTyp: GameType, idx: number) => (
             <IonSelectOption key={idx} value={idx}>{ gameTyp.name }</IonSelectOption>
             ) )}
@@ -42,7 +43,7 @@ export const SetGameModal = (
 
         <IonItem>
           <IonLabel><h2>{ playerPrompt }</h2></IonLabel>
-          <IonSelect placeholder="" multiple={true} 
+          <IonSelect placeholder="" multiple={true} disabled={ !showSelectPlayers } 
               onIonChange={(e) => { game.setPlayers( e.detail.value ) }}>
             { players.map( (player: Player, idx: number) => (
             <IonSelectOption key={idx} value={idx}>{player.name}</IonSelectOption>

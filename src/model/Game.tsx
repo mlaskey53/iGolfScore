@@ -18,10 +18,12 @@ export class Game {
 	
 	private gameType: GameType;
 	private playerIDs: number[];
+	private shouldSelectPlayers: boolean;
 	
 	constructor() {
 		this.gameType = Game.Types[ 0 ];
 		this.playerIDs = [];
+		this.shouldSelectPlayers = true;
 	}
 
 	setGame( typ = 0 ) {
@@ -50,13 +52,19 @@ export class Game {
 	
 	getSelectPlayersPrompt( players: Player[] ) {
 		if ( players.length < this.gameType.playersReqd ) {
+			this.shouldSelectPlayers = false;
 			return "At least " + this.gameType.playersReqd + " required for this game.";
 		}
-		if ( this.gameType.playersReqd === 0 ) {
+		if ( players.length == this.gameType.playersReqd || this.gameType.playersReqd === 0 ) {
 			for ( var i = 0;  i < players.length;  i++ ) { this.playerIDs[i] = i; }
+			this.shouldSelectPlayers = false;
 			return "All players selected.";
 		}
-		return "Select " + this.getPlayersReqd() + " Players:";
+		this.shouldSelectPlayers = true;
+		return "Select " + this.getPlayersReqd() + " players:";
 	}
+	
+	getShouldSelectPlayers() { return this.shouldSelectPlayers; }
+	
 };
 
