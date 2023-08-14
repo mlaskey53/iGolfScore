@@ -26,13 +26,14 @@ export const SetPlayerModal: React.FC<{
         <IonItem>
           <IonSelect placeholder={player.name} interface="action-sheet" onIonChange={(e) => { player.name = e.detail.value }}>
             { playerNames.map( (name:string, idx:number) => (
-            <IonSelectOption value={name}>{name}</IonSelectOption>
+            <IonSelectOption key={idx} value={name}>{name}</IonSelectOption>
             ) )}
           </IonSelect>
         </IonItem>
         <IonItem>
           <IonLabel slot="end">Hdcp: </IonLabel>
-          <NumInput name="hdcp1" slot="end" init={0} min={-5} max={30} setValue={ (val: number) => { player.hdcp = val }}></NumInput>
+          <NumInput name="hdcp1" slot="end" init={player.hdcp} min={-5} max={30} 
+              setValue={ (val: number) => { player.hdcp = val } }></NumInput>
         </IonItem>
       
       </IonList>

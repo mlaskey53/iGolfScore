@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IonButton, IonGrid, IonRow, IonCol, IonInput } from '@ionic/react';
+import { IonButton, IonGrid, IonRow, IonCol, IonLabel } from '@ionic/react';
 
 /**
 Provides input mechanism for entering simple number values.  Encapsulates IonInput surrounded by two IonButtons as a single IonGrid:
@@ -14,8 +14,9 @@ interface NumInputProps {
 }
 
 const NumInput: React.FC<NumInputProps> = ({ name, slot, init, min, max, setValue }) => {
-  // Local state for IonInput value.
-  const  [ numVal, setNumVal ] = useState(init);
+
+  // Local state for value.
+  const  [ numVal, setNumVal ] = useState( init );
   
   const changeValue = (val: number) => {
 	if ( val >= min && val <= max) {
@@ -29,7 +30,7 @@ const NumInput: React.FC<NumInputProps> = ({ name, slot, init, min, max, setValu
         <IonRow>
           <IonCol><IonButton onClick={() => changeValue( numVal - 1 )}>-</IonButton></IonCol>
           <IonCol size="6">
-            <IonInput name={name}>{numVal}</IonInput>
+            <IonLabel>{ numVal }</IonLabel>
           </IonCol>
           <IonCol><IonButton onClick={() => changeValue( numVal + 1 )}>+</IonButton></IonCol>
         </IonRow>

@@ -41,6 +41,7 @@ const Setup: React.FC = () => {
   // Functions for Add Player modal:
   const handleAddPlayer = ( player: Player ) => {
 	// Update state with new player
+	player.score = state.course.pars.slice(0);  // Start with scores as (cloned) pars.
 	state.players.push( player );
 	dispatch( { type: 'setPlayers', newval: state.players } );
 	dismissAddPlayer();
@@ -53,7 +54,7 @@ const Setup: React.FC = () => {
   const [presentAddPlayer, dismissAddPlayer] = useIonModal( SetPlayerModal, {
     modalTitle: "Add Player",
     playerNames: setupData.playerNames,
-    player: { name: 'Select name', hdcp: 0 },
+    player: { name: 'Select name', hdcp: 0, bonus: 0 },
     onDismiss: handleAddPlayerDismiss,
     onSave: handleAddPlayer
   } )
@@ -122,7 +123,8 @@ const Setup: React.FC = () => {
         <IonList>
         <IonItem>
           <IonLabel><h2>Course:</h2></IonLabel>
-          <IonSelect placeholder="Select course" slot="end" interface="action-sheet" onIonChange={(e) => dispatch( {type: "setCourse", newval: e.detail.value} )}>
+          <IonSelect placeholder="Select course" slot="end" interface="action-sheet"
+              onIonChange={(e) => dispatch( {type: "setCourse", newval: e.detail.value} )}>
             { setupData.courses.map( (course:Course, idx:number) => (
             <IonSelectOption key={idx} value={course}>{ course.name }</IonSelectOption>
             ) )}

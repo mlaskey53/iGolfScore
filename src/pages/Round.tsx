@@ -1,8 +1,9 @@
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar,
+import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonModal, IonButton,
   IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/react';
 import { useContext, useState } from 'react';
 import { AppContext, Course, Player } from '../State';
 import NumInput from '../components/NumInput';
+import SetScoresModal from '../components/SetScoresModal';
 import './Page.css';
 
 const Round: React.FC = () => {
@@ -12,8 +13,29 @@ const Round: React.FC = () => {
   const { state, dispatch } = useContext(AppContext);
   
   const [hole, setHole] = useState(1);
-  const [score, setScore] = useState(1);
-  const [bonus, setBonus] = useState(0);
+  
+  const handleHole = ( hle: number ) => {	
+	setHole( hle );
+  }
+
+  // Functions for player scores modal:
+  const handleSetScores = ( players: Player[] ) => {
+	dismissSetScores();
+	setHole( hole + 1 );
+  }
+  
+  const handleScoresDismiss = () => {
+	dismissSetScores();
+  }
+  
+  const [presentSetScores, dismissSetScores] = useIonModal( SetScoresModal, {
+    modalTitle: "Enter Player Scores",
+    hole: hole,
+    players: state.players,
+    onDismiss: handleScoresDismiss,
+    onSave: handleSetScores
+  } )
+
   
   return (
     <IonPage>
@@ -33,18 +55,20 @@ const Round: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         
+        <IonItem>
+		  <IonLabel slot='start'> <h2>{state.course.name}</h2> </IonLabel>
+          <IonLabel> <h2>Hole: </h2> </IonLabel>
+          <NumInput name="hole" slot="end" init={1} min={1} max={18} setValue={ handleHole }></NumInput>
+          <IonButton slot='end' onClick={() => { if ( hole <= 18 ) { presentSetScores() } }}>
+             Score
+          </IonButton>
+        </IonItem>
+          
         <IonList>
+          { state.players.map( (plyr: Player, idx: number) => (
           <IonItem>
-    	    <IonLabel> <h2>{state.course.name}</h2> </IonLabel>
-            <IonLabel slot="end"> <h2>Hole: </h2> </IonLabel>
-            <NumInput name="hole" slot="end" init={1} min={1} max={18} setValue={ (val: number) => { setHole(val) }}></NumInput>
-          </IonItem>
-          { state.players.map( (item: Player, idx: number) => (
-          <IonItem>
- 	        <IonLabel slot="start" position="fixed"><h2>{item.name}: </h2></IonLabel>
-            <NumInput name="score" slot="start" init={4} min={1} max={9} setValue={ setScore }></NumInput>
- 	        <IonLabel slot="end"><h3>Bonus: </h3></IonLabel>
-            <NumInput name="bonus" slot="end" init={item.bonus} min={0} max={9} setValue={ setBonus }></NumInput>
+ 	        <IonLabel slot="start" position="fixed"><h2>{plyr.name}: </h2></IonLabel>
+ 	        <IonLabel>{ plyr.score.toString() }</IonLabel>
           </IonItem>
           ) )}
         </IonList>

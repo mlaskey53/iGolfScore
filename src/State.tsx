@@ -13,6 +13,7 @@ export type Player = {
   name: string;
   hdcp: number;
   bonus: number;
+  score: number[];
 }
 
 export type AppState = {
