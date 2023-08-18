@@ -2,7 +2,6 @@ import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, Io
   IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/react';
 import { useContext, useState } from 'react';
 import { AppContext, Course, Player } from '../State';
-import NumInput from '../components/NumInput';
 import SetScoresModal from '../components/SetScoresModal';
 import './Page.css';
 
@@ -14,14 +13,25 @@ const Round: React.FC = () => {
   
   const [hole, setHole] = useState(1);
   
-  const handleHole = ( hle: number ) => {	
-	setHole( hle );
-  }
-
+  const changeHole = (val: number) => {
+	if ( val >= 1 && val <= 18) {
+	  setHole( val );
+	}
+  };
+  
   // Functions for player scores modal:
+  const displaySetScores = () => {
+	// Determine par for current hole, if players score is not already set, set it to par initially so it will be the default score.
+	var par = (hole <= 9) ? state.courses[state.front9].pars[hole - 1] : state.courses[state.back9].pars[hole - 10];
+	state.players.map( (plyr: Player, idx: number) => {
+		if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = par; }
+	} );
+	presentSetScores();
+  }
+  
   const handleSetScores = ( players: Player[] ) => {
 	dismissSetScores();
-	setHole( hole + 1 );
+	changeHole( hole + 1 );
   }
   
   const handleScoresDismiss = () => {
@@ -55,16 +65,22 @@ const Round: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         
-        <IonItem>
-		  <IonLabel slot='start'> <h2>{state.course.name}</h2> </IonLabel>
-          <IonLabel> <h2>Hole: </h2> </IonLabel>
-          <NumInput name="hole" slot="end" init={1} min={1} max={18} setValue={ handleHole }></NumInput>
-          <IonButton slot='end' onClick={() => { if ( hole <= 18 ) { presentSetScores() } }}>
-             Score
-          </IonButton>
-        </IonItem>
+        <IonGrid>
+          <IonRow>
+		  <IonCol size='4'> <h3>{state.courses[state.front9].name}</h3> </IonCol>
+          <IonCol> <h2>Hole: </h2> </IonCol>
+          <IonCol><IonButton onClick={() => changeHole( hole - 1 )}>-</IonButton></IonCol>
+          <IonCol> <h2>{ hole }</h2> </IonCol>
+          <IonCol><IonButton onClick={() => changeHole( hole + 1 )}>+</IonButton></IonCol>
+		  <IonCol>
+            <IonButton onClick={() => { if ( hole <= 18 ) { displaySetScores() } }}>
+               Score
+            </IonButton>
+          </IonCol>
+          </IonRow>
+        </IonGrid>
           
-        <IonList>
+{/*       <IonList>
           { state.players.map( (plyr: Player, idx: number) => (
           <IonItem>
  	        <IonLabel slot="start" position="fixed"><h2>{plyr.name}: </h2></IonLabel>
@@ -72,7 +88,11 @@ const Round: React.FC = () => {
           </IonItem>
           ) )}
         </IonList>
-        
+*/}
+		<IonItem>
+			<div dangerouslySetInnerHTML={{ __html: state.games[0].renderScoreCard( state.players, state.courses, state.front9, state.back9 )} }></div>
+		</IonItem>
+		        
       </IonContent>
     </IonPage>
   );

@@ -31,17 +31,37 @@ const Setup: React.FC = () => {
   const [showGameLimit, setShowGameLimit] = useState(false);
   
   // Get saved course, player names from setup data file.
+  // Note: this useEffect is run only once on load due to the empty dependency array specifie as the second argument.
+  // eslint-disable-next-line
   useEffect(() => {
 	fetch( './assets/json/setup.json' )
 	  .then((response) => response.json())
-	  .then((respJSON) => { setSetupData(respJSON); setShowWaiting(false); })
+	  .then((respJSON) => { 
+		  setSetupData(respJSON); setShowWaiting(false);
+		})
 	  .catch((error) => { setStatus( 'Could not retrieve setup data: ' + error ); setShowWaiting(false); });
   }, []);
-  
+
+  // Set courses info into global state.
+  // Need to do this via useEffect since the above fetch is asynchronous.  We make it dependent on setupData
+  // which will be set after the fetch completes.  
+  useEffect(() => {
+    dispatch( { type: 'setCourses', newval: setupData.courses.slice(0) } );	
+  }, [setupData]);
+
+  // Set course (front9/back9) from user selection of front 9.
+  const setCourse = ( courseId: number ) => {
+	dispatch( {type: "setFront9", newval: courseId} );
+	dispatch( {type: "setBack9", newval: setupData.courses.findIndex( (crs:Course) => crs.name === setupData.courses[courseId].pairedWith )} );
+	console.log( "Front/Back: " + state.front9 + ", " + state.back9 );
+    //console.log( "Setup courses: " + JSON.stringify( setupData.courses ) );
+    //console.log( "State courses: " + JSON.stringify( state.courses ) );
+  }
+    
   // Functions for Add Player modal:
   const handleAddPlayer = ( player: Player ) => {
 	// Update state with new player
-	player.score = state.course.pars.slice(0);  // Start with scores as (cloned) pars.
+	player.score = [];  // Start with scores as (cloned) pars.
 	state.players.push( player );
 	dispatch( { type: 'setPlayers', newval: state.players } );
 	dismissAddPlayer();
@@ -124,9 +144,9 @@ const Setup: React.FC = () => {
         <IonItem>
           <IonLabel><h2>Course:</h2></IonLabel>
           <IonSelect placeholder="Select course" slot="end" interface="action-sheet"
-              onIonChange={(e) => dispatch( {type: "setCourse", newval: e.detail.value} )}>
+              onIonChange={(e) => setCourse( e.detail.value)}>
             { setupData.courses.map( (course:Course, idx:number) => (
-            <IonSelectOption key={idx} value={course}>{ course.name }</IonSelectOption>
+            <IonSelectOption key={idx} value={idx}>{ course.name }</IonSelectOption>
             ) )}
           </IonSelect>
         </IonItem>

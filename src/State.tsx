@@ -14,16 +14,21 @@ export type Player = {
   hdcp: number;
   bonus: number;
   score: number[];
+  points: number[];
 }
 
 export type AppState = {
-  course: Course;
+  courses: Course[];
+  front9: number;
+  back9: number;
   games: Game[];
   players: Player[];
 }
 
 const initialState: AppState = {
-  course: { name: 'Not set', pairedWith: 'Not set', pars: [], hdcps: [] },
+  courses: [],
+  front9: 0,
+  back9: 0,
   games: [],
   players: []
 }
@@ -31,10 +36,14 @@ const initialState: AppState = {
 let AppContext = createContext( {} as any );
 
 let reducer = (state: AppState, action: { type: string; newval: any; }) => {
-  console.log( "Dispatch: action=" + action.type + ", newval=" + action.newval );
+  console.log( "Dispatch: action=" + action.type + ", newval=" + JSON.stringify( action.newval ) );
   switch(action.type) {
-    case "setCourse":
-      return { ...state, course: action.newval }
+    case "setCourses":
+      return { ...state, courses: action.newval }
+    case "setFront9":
+      return { ...state, front9: action.newval }
+    case "setBack9":
+      return { ...state, back9: action.newval }
     case "setGames":
       return { ...state, games: action.newval }
 	case "setPlayers":
