@@ -2,6 +2,8 @@ import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, Io
   IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/react';
 import { useContext, useState } from 'react';
 import { AppContext, Course, Player } from '../State';
+import { Course18 } from '../model/Course18';
+//import { Game } from '../model/Game';
 import SetScoresModal from '../components/SetScoresModal';
 import './Page.css';
 
@@ -13,6 +15,8 @@ const Round: React.FC = () => {
   
   const [hole, setHole] = useState(1);
   
+  const course18 = new Course18( state.courses, state.front9, state.back9 );
+  
   const changeHole = (val: number) => {
 	if ( val >= 1 && val <= 18) {
 	  setHole( val );
@@ -22,9 +26,8 @@ const Round: React.FC = () => {
   // Functions for player scores modal:
   const displaySetScores = () => {
 	// Determine par for current hole, if players score is not already set, set it to par initially so it will be the default score.
-	var par = (hole <= 9) ? state.courses[state.front9].pars[hole - 1] : state.courses[state.back9].pars[hole - 10];
-	state.players.map( (plyr: Player, idx: number) => {
-		if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = par; }
+	state.players.map( (plyr: Player) => {
+		if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = course18.getPar(hole); }
 	} );
 	presentSetScores();
   }
@@ -90,7 +93,7 @@ const Round: React.FC = () => {
         </IonList>
 */}
 		<IonItem>
-			<div dangerouslySetInnerHTML={{ __html: state.games[0].renderScoreCard( state.players, state.courses, state.front9, state.back9 )} }></div>
+			<div dangerouslySetInnerHTML={{ __html: state.games[0].renderScoreCard( state.players, course18 )} }></div>
 		</IonItem>
 		        
       </IonContent>

@@ -1,5 +1,6 @@
 // Model class for single game.
 import { Course, Player } from '../State';
+import { Course18 } from './Course18';
 
 export 	interface GameType { name: string; playersReqd: number; team?: boolean };	
 
@@ -66,16 +67,7 @@ export class Game {
 	
 	getShouldSelectPlayers() { return this.shouldSelectPlayers; }
 
-	getCourseVal( hole: number, front9: number[], back9: number[] ) {
-		var par = 0;
-		if ( 1 <= hole && hole <= 9 )
-			par = front9[ hole - 1 ];
-		else if ( hole <= 18 ) 
-			par = back9[ hole - 10 ];
-		return par;
-	}
-	
-	renderScoreCard( players: Player[], courses: Course[], front9: number, back9: number ) {
+	renderScoreCard( players: Player[], course: Course18 ) {
 	    var html = '';
 		html += "<table><tr style=\"background-color:DodgerBlue;\"><td>Hole:</td>";
 		html += "<td> 1</td><td> 2</td><td> 3</td><td> 4</td><td> 5</td><td> 6</td><td> 7</td><td> 8</td><td> 9</td><td></td><td></td>";
@@ -84,7 +76,7 @@ export class Game {
 
 	   	var ninePar = 0;
 	   	for ( var h = 1;  h <= 18;  h++ ) {
-	   		var p = this.getCourseVal( h, courses[front9].pars, courses[back9].pars );  ninePar += p;
+	   		var p = course.getPar( h );  ninePar += p;
 	   		html += "<td>" + p + "</td>";
 	   		if ( h === 9 ) {
 	   			html += "<td>" + ninePar + "</td><td></td>";
@@ -95,7 +87,7 @@ export class Game {
 	
 	   	html += "<tr style=\"background-color:Yellow;\"> <td>Hdcp:</td>";
 	   	for ( h = 1;  h <= 18;  h++ ) {
-	   		html += "<td>" + this.getCourseVal( h, courses[front9].hdcps, courses[back9].hdcps ) + "</td>";
+	   		html += "<td>" + course.getHdcp( h ) + "</td>";
 	   		if ( h === 9 )
 	   			html += "<td></td><td></td>";
 	   	}
@@ -104,10 +96,11 @@ export class Game {
 	    players.forEach( player => {
 	        html += "<tr><th>" + player.name + "</th>";
 	   	    for ( h = 1;  h <= 18;  h++ ) {
+				let strokeHole = course.isStrokeHole( h, player.hdcp );
 	            if ( h <= player.score.length )
-	   	    	    html += "<th>" + player.score[ h - 1 ] + "</th>";
+	   	    	    html += "<th" + (strokeHole ? " style=\"background-color:LightCoral;\"" : "") + ">" + player.score[ h - 1 ] + "</th>";
 	            else
-	                html += "<th></th>";
+	                html += "<th" + (strokeHole ? " style=\"background-color:LightCoral;\"" : "") + "></th>";
 	   	    	if ( h === 9 )
 	   	    		html += "<th></th><th></th>";
 	   	    }
