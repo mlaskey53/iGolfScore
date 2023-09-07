@@ -1,5 +1,6 @@
 import React, { createContext, useReducer } from "react";
 import { Game } from "./model/Game";
+import { Course18 } from "./model/Course18";
 
 // Holds course data for 9 holes (so we can handle 27-hole courses and play in reverse order.)  
 export type Course = {
@@ -19,16 +20,14 @@ export type Player = {
 
 export type AppState = {
   courses: Course[];
-  front9: number;
-  back9: number;
+  course18: Course18;
   games: Game[];
   players: Player[];
 }
 
 const initialState: AppState = {
   courses: [],
-  front9: 0,
-  back9: 0,
+  course18: new Course18( [], 0, 0 ),
   games: [],
   players: []
 }
@@ -40,10 +39,8 @@ let reducer = (state: AppState, action: { type: string; newval: any; }) => {
   switch(action.type) {
     case "setCourses":
       return { ...state, courses: action.newval }
-    case "setFront9":
-      return { ...state, front9: action.newval }
-    case "setBack9":
-      return { ...state, back9: action.newval }
+    case "setCourse18":
+      return { ...state, course18: action.newval }
     case "setGames":
       return { ...state, games: action.newval }
 	case "setPlayers":

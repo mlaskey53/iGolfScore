@@ -1,9 +1,7 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonModal, IonButton,
-  IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol } from '@ionic/react';
+  IonItem, IonGrid, IonRow, IonCol } from '@ionic/react';
 import { useContext, useState } from 'react';
-import { AppContext, Course, Player } from '../State';
-import { Course18 } from '../model/Course18';
-//import { Game } from '../model/Game';
+import { AppContext, Player } from '../State';
 import SetScoresModal from '../components/SetScoresModal';
 import './Page.css';
 
@@ -15,8 +13,6 @@ const Round: React.FC = () => {
   
   const [hole, setHole] = useState(1);
   
-  const course18 = new Course18( state.courses, state.front9, state.back9 );
-  
   const changeHole = (val: number) => {
 	if ( val >= 1 && val <= 18) {
 	  setHole( val );
@@ -27,12 +23,16 @@ const Round: React.FC = () => {
   const displaySetScores = () => {
 	// Determine par for current hole, if players score is not already set, set it to par initially so it will be the default score.
 	state.players.map( (plyr: Player) => {
-		if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = course18.getPar(hole); }
+		if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = state.course18.getPar(hole); }
 	} );
 	presentSetScores();
   }
   
   const handleSetScores = ( players: Player[] ) => {
+//	dismissSetScores();
+	for ( var i = 0;  i < state.games.length;  i++ ) {
+		state.games[i].determinePoints( players, state.course18, hole );
+	}
 	dismissSetScores();
 	changeHole( hole + 1 );
   }
@@ -70,7 +70,7 @@ const Round: React.FC = () => {
         
         <IonGrid>
           <IonRow>
-		  <IonCol size='4'> <h3>{state.courses[state.front9].name}</h3> </IonCol>
+		  <IonCol size='4'> <h3>{state.course18.getName(hole)}</h3> </IonCol>
           <IonCol> <h2>Hole: </h2> </IonCol>
           <IonCol><IonButton onClick={() => changeHole( hole - 1 )}>-</IonButton></IonCol>
           <IonCol> <h2>{ hole }</h2> </IonCol>
@@ -93,7 +93,7 @@ const Round: React.FC = () => {
         </IonList>
 */}
 		<IonItem>
-			<div dangerouslySetInnerHTML={{ __html: state.games[0].renderScoreCard( state.players, course18 )} }></div>
+			<div dangerouslySetInnerHTML={{ __html: state.games[0].renderScoreCard( state.players, state.course18 )} }></div>
 		</IonItem>
 		        
       </IonContent>

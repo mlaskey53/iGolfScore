@@ -5,6 +5,7 @@ import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, Io
 import { personAdd, personRemove, create, golf } from 'ionicons/icons';
 import './Page.css';
 import { Game } from "../model/Game";
+import { Course18 } from "../model/Course18";
 import SetPlayerModal from '../components/SetPlayerModal';
 import SetGameModal from '../components/SetGameModal';
 
@@ -51,9 +52,9 @@ const Setup: React.FC = () => {
 
   // Set course (front9/back9) from user selection of front 9.
   const setCourse = ( courseId: number ) => {
-	dispatch( {type: "setFront9", newval: courseId} );
-	dispatch( {type: "setBack9", newval: setupData.courses.findIndex( (crs:Course) => crs.name === setupData.courses[courseId].pairedWith )} );
-	console.log( "Front/Back: " + state.front9 + ", " + state.back9 );
+	var back9 = setupData.courses.findIndex( (crs:Course) => crs.name === setupData.courses[courseId].pairedWith );
+	dispatch( {type: "setCourse18", newval: new Course18( state.courses, courseId, back9 )} );
+	console.log( "Front/Back: " + courseId + " / " + back9 );
     //console.log( "Setup courses: " + JSON.stringify( setupData.courses ) );
     //console.log( "State courses: " + JSON.stringify( state.courses ) );
   }
@@ -61,7 +62,8 @@ const Setup: React.FC = () => {
   // Functions for Add Player modal:
   const handleAddPlayer = ( player: Player ) => {
 	// Update state with new player
-	player.score = [];  // Start with scores as (cloned) pars.
+	player.score = [];
+	player.points = [];
 	state.players.push( player );
 	dispatch( { type: 'setPlayers', newval: state.players } );
 	dismissAddPlayer();

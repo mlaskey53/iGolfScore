@@ -16,8 +16,13 @@ export class Course18 {
 		this.courses = courses;
 		this.front9 = front; this.back9 = back;
 
-		this.frontHdcps = this.convertHdcps(this.courses[this.front9].hdcps, 1);
-		this.backHdcps = this.convertHdcps(this.courses[this.back9].hdcps, 10);
+		if ( this.courses.length >= 2 ) {
+			this.frontHdcps = this.convertHdcps(this.courses[this.front9].hdcps, 1);
+			this.backHdcps = this.convertHdcps(this.courses[this.back9].hdcps, 10);
+		} else {
+			this.frontHdcps = [];
+			this.backHdcps = [];
+		}
 	}
 
 	getName(hole: number) {
