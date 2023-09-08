@@ -63,7 +63,6 @@ const Setup: React.FC = () => {
   const handleAddPlayer = ( player: Player ) => {
 	// Update state with new player
 	player.score = [];
-	player.points = [];
 	state.players.push( player );
 	dispatch( { type: 'setPlayers', newval: state.players } );
 	dismissAddPlayer();
@@ -107,6 +106,10 @@ const Setup: React.FC = () => {
   }
 
   const handleAddGame = ( game: Game ) => {
+	// Ensure game players are set - SetGameModal might default to all players, if so, set them here.
+	if ( game.getPlayers.length === 0 ) {
+		game.setPlayers( Array.from({ length: state.players.length }, (val, idx) => idx) );
+	}
 	state.games.push( game );
 	dispatch( { type: "setGames", newval: state.games } );
 	dismissAddGame();	

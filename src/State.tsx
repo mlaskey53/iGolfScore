@@ -15,7 +15,6 @@ export type Player = {
   hdcp: number;
   bonus: number;
   score: number[];
-  points: number[];
 }
 
 export type AppState = {
