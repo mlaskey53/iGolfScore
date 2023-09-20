@@ -101,7 +101,7 @@ export class Game {
 				let player = players[ this.playerIDs[i] ];
 				let playerScore = this.getNetScore( course, holeNumber, player );
 				
-				this.playerPts[i][holeNumber] = this.getPointScore( playerScore, par );
+				this.playerPts[i][holeIdx] = this.getPointScore( playerScore, par );
 			}
 			break;
 			
@@ -159,7 +159,7 @@ export class Game {
 	}
 
 	renderScoreCard( players: Player[], course: Course18 ) {
-	    var html = "<h2>Game: " + this.getName() + "</h2>";
+	    var html = "<h3>Game: " + this.getName() + "</h3>";
 		html += "<table><tr style=\"background-color:DodgerBlue;\"><td>Hole:</td>";
 		html += "<td> 1</td><td> 2</td><td> 3</td><td> 4</td><td> 5</td><td> 6</td><td> 7</td><td> 8</td><td> 9</td><td></td><td></td>";
 		html += "<td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td></td><td></td></tr>";
@@ -204,7 +204,7 @@ export class Game {
 	   	    }
 	   	    html += "<th>" + backScore + "</th><th>" + (frontScore + backScore) + "</th></tr>\n";
 	   	    
-	        html += "<tr><td>Points</td>";
+	        html += "<tr><td></td>";
 	   	    for ( h = 1;  h <= 18;  h++ ) {
 	            if ( h <= this.playerPts[plyrId].length ) {
 					const pts = this.playerPts[plyrId][ h - 1 ];

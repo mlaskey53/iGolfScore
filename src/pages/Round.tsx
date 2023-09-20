@@ -1,5 +1,5 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonModal, IonButton,
-  IonItem, IonGrid, IonRow, IonCol } from '@ionic/react';
+  IonItem, IonGrid, IonRow, IonCol, IonLabel } from '@ionic/react';
 import { useContext, useState } from 'react';
 import { AppContext, Player } from '../State';
 import SetScoresModal from '../components/SetScoresModal';
@@ -67,7 +67,9 @@ const Round: React.FC = () => {
             <IonTitle size="large">{title}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        
+
+{ state.course18.isDefined() && (state.games.length > 0) && (state.players.length > 0) ? (        
+        <>
         <IonGrid>
           <IonRow>
 		  <IonCol size='4'> <h3>{state.course18.getName(hole)}</h3> </IonCol>
@@ -83,19 +85,26 @@ const Round: React.FC = () => {
           </IonRow>
         </IonGrid>
           
-{/*       <IonList>
-          { state.players.map( (plyr: Player, idx: number) => (
-          <IonItem>
- 	        <IonLabel slot="start" position="fixed"><h2>{plyr.name}: </h2></IonLabel>
- 	        <IonLabel>{ plyr.score.toString() }</IonLabel>
-          </IonItem>
-          ) )}
-        </IonList>
-*/}
 		<IonItem>
 			<div dangerouslySetInnerHTML={{ __html: state.games[0].renderScoreCard( state.players, state.course18 )} }></div>
 		</IonItem>
-		        
+		</>
+) : (
+		<>
+		<IonItem>
+			<IonLabel color="danger"><h2>Please complete game setup!</h2></IonLabel>
+		</IonItem>
+		<IonItem>
+			<IonLabel>Select:</IonLabel>
+			{ state.course18.isDefined() ? ("") : (
+				<IonLabel>Course</IonLabel> )}
+			{ state.players.length > 0 ? ("") : (
+				<IonLabel>Players</IonLabel> )}
+			{ state.games.length > 0 ? ("") : (
+				<IonLabel>Game(s)</IonLabel> )}
+		</IonItem>
+		</>
+) }
       </IonContent>
     </IonPage>
   );

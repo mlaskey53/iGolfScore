@@ -24,6 +24,8 @@ export class Course18 {
 			this.backHdcps = [];
 		}
 	}
+	
+	isDefined() { return this.courses.length > 0; }
 
 	getName(hole: number) {
 		return (hole <= 9) ? this.courses[this.front9].name : this.courses[this.back9].name;
