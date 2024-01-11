@@ -1,0 +1,31 @@
+Installing Ionic:
+https://ionicframework.com/docs/intro/cli
+
+Running app via local Ionic server:
+cd iGolfScore
+ionic s --no-open
+
+In browser: http://localhost:8100/
+
+Running app via Android Studio:
+(Once only:)
+npm install @capacitor/android (no longer needed with Ionic 7?)
+ionic capacitor sync android
+ionic capacitor add android
+
+export CAPACITOR_ANDROID_STUDIO_PATH=/opt/android-studio/bin/studio.sh
+ionic build
+ionic capacitor open android
+
+(To rebuild Android code:)
+rm -rf android
+rm -rf build
+
+Need to add: <application ... android:usesCleartextTraffic="true" ...
+ to app/manifests/AndroidManifest.xml in Android Studio to allow HTTP (vs. HTTPS) traffic.
+ 
+Adding splash icons: (See https://github.com/ionic-team/capacitor-assets)
+cordova-res android --skip-config --copy
+ 
+
+

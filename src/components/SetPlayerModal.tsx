@@ -31,8 +31,8 @@ export const SetPlayerModal: React.FC<{
           </IonSelect>
         </IonItem>
         <IonItem>
-          <IonLabel slot="end">Hdcp: </IonLabel>
-          <NumInput name="hdcp1" slot="end" init={player.hdcp} min={-5} max={30} 
+          {/*<IonLabel>Hdcp: </IonLabel>*/}
+          <NumInput name="Hdcp" init={player.hdcp} min={-5} max={30} 
               setValue={ (val: number) => { player.hdcp = val } }></NumInput>
         </IonItem>
       

@@ -22,7 +22,7 @@ const Round: React.FC = () => {
   // Functions for player scores modal:
   const displaySetScores = () => {
 	// Determine par for current hole, if players score is not already set, set it to par initially so it will be the default score.
-	state.players.map( (plyr: Player) => {
+	state.players.forEach( (plyr: Player) => {
 		if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = state.course18.getPar(hole); }
 	} );
 	presentSetScores();
@@ -49,6 +49,8 @@ const Round: React.FC = () => {
     onSave: handleSetScores
   } )
 
+// Removed following from IonGrid below and moved to IonTitle
+//		  <IonCol size='4'> <h3>{state.course18.getName(hole)}</h3> </IonCol>
   
   return (
     <IonPage>
@@ -57,7 +59,7 @@ const Round: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>{title}</IonTitle>
+          <IonTitle>{state.course18.getName(hole)}</IonTitle>
         </IonToolbar>
       </IonHeader>
 
@@ -72,12 +74,11 @@ const Round: React.FC = () => {
         <>
         <IonGrid>
           <IonRow>
-		  <IonCol size='4'> <h3>{state.course18.getName(hole)}</h3> </IonCol>
-          <IonCol> <h2>Hole: </h2> </IonCol>
+          <IonCol> <h3>Hole: </h3> </IonCol>
           <IonCol><IonButton onClick={() => changeHole( hole - 1 )}>-</IonButton></IonCol>
-          <IonCol> <h2>{ hole }</h2> </IonCol>
+          <IonCol> <h3>{ hole }</h3> </IonCol>
           <IonCol><IonButton onClick={() => changeHole( hole + 1 )}>+</IonButton></IonCol>
-		  <IonCol>
+		  <IonCol size="4">
             <IonButton onClick={() => { if ( hole <= 18 ) { displaySetScores() } }}>
                Score
             </IonButton>

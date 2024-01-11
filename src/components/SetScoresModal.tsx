@@ -25,11 +25,11 @@ export const SetScoresModal: React.FC<{
       <IonList>
           { players.map( (plyr: Player, idx: number) => (
           <IonItem>
- 	        <IonLabel slot="start" position="fixed"><h2>{plyr.name}: </h2></IonLabel>
-            <NumInput name="score" slot="start" init={ plyr.score[hole - 1] } min={1} max={9}
+ 	        {/*<IonLabel slot="start" position="fixed"><h2>{plyr.name}: </h2></IonLabel>*/}
+            <NumInput name={plyr.name} init={ plyr.score[hole - 1] } min={1} max={9}
               setValue={ (val: number) => { plyr.score[hole - 1] = val } }></NumInput>
- 	        <IonLabel slot="end"><h3>Bonus: </h3></IonLabel>
-            <NumInput name="bonus" slot="end" init={ plyr.bonus } min={0} max={9}
+ 	        {/*<IonLabel><h3>Bonus: </h3></IonLabel>*/}
+            <NumInput name="Bonus" init={ plyr.bonus } min={0} max={9}
               setValue={ (val: number) => { plyr.bonus = val } }></NumInput>
           </IonItem>
           ) )}

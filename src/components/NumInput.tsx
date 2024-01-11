@@ -7,13 +7,12 @@ Provides input mechanism for entering simple number values.  Encapsulates IonInp
 */
  
 interface NumInputProps {
-  name: string;   // Name for IonInput
-  slot: string;   // Slot for grid.
+  name: string;   // Name prefixed to buttons/value
   init: number;  min: number;  max: number;
   setValue: (arg0: number) => void;  // Sets value to external state.
 }
 
-const NumInput: React.FC<NumInputProps> = ({ name, slot, init, min, max, setValue }) => {
+const NumInput: React.FC<NumInputProps> = ({ name, init, min, max, setValue }) => {
 
   // Local state for value.
   const  [ numVal, setNumVal ] = useState( init );
@@ -26,11 +25,12 @@ const NumInput: React.FC<NumInputProps> = ({ name, slot, init, min, max, setValu
   };
   
   return (
-      <IonGrid slot={slot}>
+      <IonGrid>
         <IonRow>
-          <IonCol><IonButton onClick={() => changeValue( numVal - 1 )}>-</IonButton></IonCol>
-          <IonCol size="6">{ numVal }</IonCol>
-          <IonCol><IonButton onClick={() => changeValue( numVal + 1 )}>+</IonButton></IonCol>
+          <IonCol size="4">{name}:</IonCol>
+          <IonCol size="3"><IonButton onClick={() => changeValue( numVal - 1 )}>-</IonButton></IonCol>
+          <IonCol size="2">{numVal}</IonCol>
+          <IonCol size="3"><IonButton onClick={() => changeValue( numVal + 1 )}>+</IonButton></IonCol>
         </IonRow>
       </IonGrid>
   );
