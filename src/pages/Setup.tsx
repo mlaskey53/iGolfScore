@@ -245,7 +245,9 @@ const Setup: React.FC = () => {
       
       <IonFooter>
         <IonToolbar>
-            <IonButton shape="round" expand="block" onClick={() => history.push("Round") }>Start Round</IonButton>
+          <IonButton shape="round" expand="block" onClick={() => history.push("Round") }>
+            { ((state.players.length > 0) && (state.players[0].score.length > 0) ? "Continue" : "Start") + " Round" }
+          </IonButton>
         </IonToolbar>
       </IonFooter>      
     </IonPage>

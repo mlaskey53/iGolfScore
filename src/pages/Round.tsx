@@ -1,17 +1,18 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonModal, IonButton,
-  IonItem, IonGrid, IonRow, IonCol, IonLabel } from '@ionic/react';
+  IonItem, IonGrid, IonRow, IonCol, IonLabel, IonSelect, IonSelectOption } from '@ionic/react';
 import { useContext, useState } from 'react';
 import { AppContext, Player } from '../State';
 import SetScoresModal from '../components/SetScoresModal';
+import { Game } from "../model/Game";
 import './Page.css';
 
 const Round: React.FC = () => {
 
-  const title = "Round";
+  //const title = "Round";  Use course name as title instead.
   
   const { state, dispatch } = useContext(AppContext);
 
-  // Hole number being scored.  We use the length of the players.score array to determine the number of holes played.  
+  // Local state for hole number being scored.  We use the length of the players.score array to determine the number of holes played.  
   const [hole, setHole] = useState(1);
   
   const changeHole = (val: number) => {
@@ -53,7 +54,10 @@ const Round: React.FC = () => {
     players: state.players,
     onClose: handleCloseScores,
     onSave: handleSetScores
-  } )
+  } );
+  
+  // Local state for tracking the game to be displayed via the selection drop-down.
+  const [gameDisplay, setGameDisplay] = useState(0);
 
   return (
     <IonPage>
@@ -69,7 +73,7 @@ const Round: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">{title}</IonTitle>
+            <IonTitle>{state.course18.getName(hole)}</IonTitle>
           </IonToolbar>
         </IonHeader>
 
@@ -89,8 +93,20 @@ const Round: React.FC = () => {
           </IonRow>
         </IonGrid>
           
+        <IonItem>
+        { (state.games.length === 1) ? (
+          <IonLabel>{state.games[0].getName()}</IonLabel>        
+        ) : (
+          <IonSelect aria-label={state.games[gameDisplay].getName()} interface="popover"
+              onIonChange={(e) => setGameDisplay( e.detail.value ) }>
+            { state.games.map( (game:Game, idx:number) => (
+            <IonSelectOption key={idx} value={idx}>{game.getName()}</IonSelectOption>
+            ) )}
+          </IonSelect>
+        ) }
+        </IonItem>
 		<IonItem>
-			<div dangerouslySetInnerHTML={{ __html: state.games[0].renderScoreCard( state.players, state.course18 )} }></div>
+			<div dangerouslySetInnerHTML={{ __html: state.games[gameDisplay].renderScoreCard( state.players, state.course18 )} }></div>
 		</IonItem>
 		</>
 ) : (
