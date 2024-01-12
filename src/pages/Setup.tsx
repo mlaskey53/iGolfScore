@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
 import { AppContext, Course, Player } from '../State';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButton, IonIcon,
 	IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonLoading, useIonModal, IonAlert } from '@ionic/react';
@@ -17,6 +18,8 @@ interface SetupData {
 const Setup: React.FC = () => {
 
   const { state, dispatch } = useContext(AppContext);
+  
+  const history = useHistory();
 
   // Local state to manage loading setup info.
   const [setupData, setSetupData] = useState<SetupData>( { courses: [ { name: '<Add course>', pairedWith: '', pars: [], hdcps: [] } ], playerNames: [ '<Add player>' ] } );
@@ -30,6 +33,7 @@ const Setup: React.FC = () => {
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
   const [showPlayerLimit, setShowPlayerLimit] = useState(false);
   const [showGameLimit, setShowGameLimit] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   
   // Get saved course, player names from setup data file.
   // Note: this useEffect is run only once on load due to the empty dependency array specifie as the second argument.
@@ -125,15 +129,20 @@ const Setup: React.FC = () => {
     onDismiss: handleAddGameDismiss,
     onSave: handleAddGame
   } )
+  
+  const resetSetup = () => {
+	dispatch( { type: "setCourse18", newval: new Course18( [], 0, 0 )} );
+	dispatch( { type: 'setPlayers', newval: [] } );
+	dispatch( { type: 'setGames', newval: [] } );  
+  }
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonMenuButton />
-          </IonButtons>
+          <IonButtons slot="start"><IonMenuButton /></IonButtons>
           <IonTitle>Setup</IonTitle>
+          <IonButtons slot="end"><IonButton onClick={() => setShowResetConfirm(true) }>Reset</IonButton></IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -178,7 +187,7 @@ const Setup: React.FC = () => {
             ) )}
           </IonGrid>
         </IonItem>
-       </IonList>
+        </IonList>
        
         <IonList>
         <IonItem>
@@ -197,9 +206,14 @@ const Setup: React.FC = () => {
             ) )}
           </IonGrid>
         </IonItem>
-
+        </IonList>
+        
+        <IonList>
         <IonItem>
           <IonLabel>{status}</IonLabel>
+        </IonItem>
+        <IonItem>
+          <IonButton onClick={() => history.push("Round") }>Start Round</IonButton>
         </IonItem>
         </IonList>
 
@@ -222,6 +236,13 @@ const Setup: React.FC = () => {
           header={'Game limit reached'} message={"Up to 3 games allowed."}
           buttons={[
             { text: 'OK', id: 'ok-button', handler: () => {} }
+          ]}
+       />
+       <IonAlert isOpen={showResetConfirm} onDidDismiss={() => setShowResetConfirm(false)}
+          header={'Reset setup?'} message={"Resets entire player/game setup."}
+          buttons={[
+            { text: 'Cancel', role: 'cancel', cssClass: 'secondary', id: 'cancel-button', handler: () => {} },
+            { text: 'OK', id: 'confirm-button', handler: () => { resetSetup(); } }
           ]}
        />
        

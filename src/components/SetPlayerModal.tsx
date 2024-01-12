@@ -1,5 +1,5 @@
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
-   IonContent, IonList, IonItem, IonLabel, IonSelect, IonSelectOption } from '@ionic/react';
+   IonContent, IonList, IonItem, IonSelect, IonSelectOption } from '@ionic/react';
 import { Player } from '../State';
 import NumInput from '../components/NumInput';
 
@@ -31,7 +31,6 @@ export const SetPlayerModal: React.FC<{
           </IonSelect>
         </IonItem>
         <IonItem>
-          {/*<IonLabel>Hdcp: </IonLabel>*/}
           <NumInput name="Hdcp" init={player.hdcp} min={-5} max={30} 
               setValue={ (val: number) => { player.hdcp = val } }></NumInput>
         </IonItem>

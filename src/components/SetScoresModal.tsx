@@ -1,5 +1,5 @@
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
-   IonContent, IonList, IonItem, IonLabel } from '@ionic/react';
+   IonContent, IonList, IonItem } from '@ionic/react';
 import { Player } from '../State';
 import NumInput from '../components/NumInput';
 
@@ -7,16 +7,16 @@ export const SetScoresModal: React.FC<{
   modalTitle: string;
   hole: number;
   players: Player[];
-  onDismiss: () => void;
+  onClose: () => void;
   onSave: ( arg: Player[] ) => void;
-}> = ({ modalTitle, hole, players, onDismiss, onSave }) => (
+}> = ({ modalTitle, hole, players, onClose, onSave }) => (
 
   <>
     <IonHeader>
        <IonToolbar color="primary">
           <IonTitle>{modalTitle + " for Hole " + hole}</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={() => onDismiss()}>Close</IonButton>
+            <IonButton onClick={() => onClose()}>Close</IonButton>
           </IonButtons>
        </IonToolbar>
     </IonHeader>
@@ -25,10 +25,8 @@ export const SetScoresModal: React.FC<{
       <IonList>
           { players.map( (plyr: Player, idx: number) => (
           <IonItem>
- 	        {/*<IonLabel slot="start" position="fixed"><h2>{plyr.name}: </h2></IonLabel>*/}
             <NumInput name={plyr.name} init={ plyr.score[hole - 1] } min={1} max={9}
               setValue={ (val: number) => { plyr.score[hole - 1] = val } }></NumInput>
- 	        {/*<IonLabel><h3>Bonus: </h3></IonLabel>*/}
             <NumInput name="Bonus" init={ plyr.bonus } min={0} max={9}
               setValue={ (val: number) => { plyr.bonus = val } }></NumInput>
           </IonItem>

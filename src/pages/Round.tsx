@@ -10,11 +10,13 @@ const Round: React.FC = () => {
   const title = "Round";
   
   const { state, dispatch } = useContext(AppContext);
-  
+
+  // Hole number being scored.  We use the length of the players.score array to determine the number of holes played.  
   const [hole, setHole] = useState(1);
   
   const changeHole = (val: number) => {
-	if ( val >= 1 && val <= 18) {
+    // Only allow current hole to be incremented to the number of holes played + 1.
+	if ( val >= 1 && val <= ( state.players[0].score.length + 1) ) {
 	  setHole( val );
 	}
   };
@@ -23,13 +25,13 @@ const Round: React.FC = () => {
   const displaySetScores = () => {
 	// Determine par for current hole, if players score is not already set, set it to par initially so it will be the default score.
 	state.players.forEach( (plyr: Player) => {
-		if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = state.course18.getPar(hole); }
+		//if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = state.course18.getPar(hole); }
+		if ( plyr.score.length < hole )  plyr.score.push( state.course18.getPar(hole) );
 	} );
 	presentSetScores();
   }
   
   const handleSetScores = ( players: Player[] ) => {
-//	dismissSetScores();
 	for ( var i = 0;  i < state.games.length;  i++ ) {
 		state.games[i].determinePoints( players, state.course18, hole );
 	}
@@ -37,7 +39,11 @@ const Round: React.FC = () => {
 	changeHole( hole + 1 );
   }
   
-  const handleScoresDismiss = () => {
+  const handleCloseScores = () => {
+    // If modal closed without saving on unscored hole, remove the players scores set as defaults above.
+    if ( hole === state.players[0].score.length ) {
+      state.players.forEach( (plyr: Player) => { plyr.score.pop(); } );
+    }
 	dismissSetScores();
   }
   
@@ -45,13 +51,10 @@ const Round: React.FC = () => {
     modalTitle: "Enter Player Scores",
     hole: hole,
     players: state.players,
-    onDismiss: handleScoresDismiss,
+    onClose: handleCloseScores,
     onSave: handleSetScores
   } )
 
-// Removed following from IonGrid below and moved to IonTitle
-//		  <IonCol size='4'> <h3>{state.course18.getName(hole)}</h3> </IonCol>
-  
   return (
     <IonPage>
       <IonHeader>

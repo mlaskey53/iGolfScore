@@ -28,6 +28,7 @@ export class Course18 {
 	isDefined() { return this.courses.length > 0; }
 
 	getName(hole: number) {
+	    if ( !this.isDefined() ) return "No course selected";
 		return (hole <= 9) ? this.courses[this.front9].name : this.courses[this.back9].name;
 	}
 	//public String getFront9()  {  return courseNames[ front9 ];  }
