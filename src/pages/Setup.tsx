@@ -1,7 +1,8 @@
 import { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { AppContext, Course, Player } from '../State';
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonButton, IonIcon,
+import { IonButtons, IonContent, IonHeader, IonFooter, IonMenuButton, IonPage, IonTitle, IonToolbar,
+    IonList, IonItem, IonLabel, IonButton, IonIcon,
 	IonSelect, IonSelectOption, IonGrid, IonRow, IonCol, IonLoading, useIonModal, IonAlert } from '@ionic/react';
 import { personAdd, personRemove, create, golf } from 'ionicons/icons';
 import './Page.css';
@@ -52,6 +53,7 @@ const Setup: React.FC = () => {
   // which will be set after the fetch completes.  
   useEffect(() => {
     dispatch( { type: 'setCourses', newval: setupData.courses.slice(0) } );	
+// eslint-disable-next-line
   }, [setupData]);
 
   // Set course (front9/back9) from user selection of front 9.
@@ -208,14 +210,7 @@ const Setup: React.FC = () => {
         </IonItem>
         </IonList>
         
-        <IonList>
-        <IonItem>
-          <IonLabel>{status}</IonLabel>
-        </IonItem>
-        <IonItem>
-          <IonButton onClick={() => history.push("Round") }>Start Round</IonButton>
-        </IonItem>
-        </IonList>
+        <IonLabel>{status}</IonLabel>
 
        <IonLoading isOpen={showWaiting} onDidDismiss={() => setShowWaiting(false)} message={'Processing...'} duration={5000} />
        
@@ -247,6 +242,12 @@ const Setup: React.FC = () => {
        />
        
       </IonContent>
+      
+      <IonFooter>
+        <IonToolbar>
+            <IonButton shape="round" expand="block" onClick={() => history.push("Round") }>Start Round</IonButton>
+        </IonToolbar>
+      </IonFooter>      
     </IonPage>
   );
 };
