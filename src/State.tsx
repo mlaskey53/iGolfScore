@@ -2,6 +2,8 @@ import React, { createContext, useReducer } from "react";
 import { Game } from "./model/Game";
 import { Course18 } from "./model/Course18";
 
+// Manages 'global' state for app.  Based on https://ionic.io/blog/a-state-management-pattern-for-ionic-react-with-react-hooks. 
+
 // Holds course data for 9 holes (so we can handle 27-hole courses and play in reverse order.)  
 export type Course = {
   name: string;

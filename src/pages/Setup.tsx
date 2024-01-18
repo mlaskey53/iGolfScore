@@ -112,13 +112,9 @@ const Setup: React.FC = () => {
   }
 
   const handleAddGame = ( game: Game ) => {
-	// Ensure game players are set - SetGameModal might default to all players, if so, set them here.
-	if ( game.getPlayers.length === 0 ) {
-		game.setPlayers( Array.from({ length: state.players.length }, (val, idx) => idx) );
-	}
-	state.games.push( game );
+	dismissAddGame();
+    state.games.push( game );
 	dispatch( { type: "setGames", newval: state.games } );
-	dismissAddGame();	
   }
   
   const handleAddGameDismiss = () => {
@@ -133,7 +129,7 @@ const Setup: React.FC = () => {
   } )
   
   const resetSetup = () => {
-	dispatch( { type: "setCourse18", newval: new Course18( [], 0, 0 )} );
+	//dispatch( { type: "setCourse18", newval: new Course18( [], 0, 0 )} );
 	dispatch( { type: 'setPlayers', newval: [] } );
 	dispatch( { type: 'setGames', newval: [] } );  
   }

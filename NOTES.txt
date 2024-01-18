@@ -6,6 +6,7 @@ cd iGolfScore
 ionic s --no-open
 
 In browser: http://localhost:8100/
+Tip: Shrink the browser window horizontally to simulate display on phone.
 
 Running app via Android Studio:
 (Once only:)
@@ -21,8 +22,13 @@ ionic capacitor open android
 rm -rf android
 rm -rf build
 
-Need to add: <application ... android:usesCleartextTraffic="true" ...
- to app/manifests/AndroidManifest.xml in Android Studio to allow HTTP (vs. HTTPS) traffic.
+Setting Android icons:
+In Android Studio: select app->New->Image Asset.  Creates set of icon images.
+Optionally change AndroidManifest.xml for <application ... icon: to created image name.
+
+        android:icon="@mipmap/<your-icon>_ic_launcher"
+        android:roundIcon="@mipmap/<your-icon>_ic_launcher_round"
+
  
 Adding splash icons: (See https://github.com/ionic-team/capacitor-assets)
 cordova-res android --skip-config --copy

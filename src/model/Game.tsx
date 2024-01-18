@@ -2,7 +2,9 @@
 import { Player } from '../State';
 import { Course18 } from './Course18';
 
-export 	interface GameType { name: string; playersReqd: number; team?: boolean };	
+export 	interface GameType { name: string; playersReqd: number; team?: boolean };
+
+export interface Team { name: string, ids: number[], pts: number[] }	
 
 export class Game {
 
@@ -12,21 +14,26 @@ export class Game {
 		{ name: "Total Points", playersReqd: 0, team: false },
 		{ name: "9-Points", playersReqd: 3, team: false },
 		{ name: "Best Ball - Strokes", playersReqd: 4, team: true },
-		{ name: "Best Ball - Points", playersReqd: 4, team: true }
+		{ name: "Best Ball - Points", playersReqd: 4, team: true },
+		{ name: "Best Ball - Sixes", playersReqd: 4, team: true }
 	];
 	
 	public static PointValues = [ 5, 4, 3, 2, 1, 0, 0, 0, 0, 0 ];  // Points for hole-in-one, eagle, birdie, etc.
 	
 	private gameType: GameType;
+	private selectPlayers: boolean;
 	private playerIDs: number[];
 	private playerPts: number[][];
-	private shouldSelectPlayers: boolean;
+	private team1: Team;
+	private team2: Team;
 	
 	constructor() {
 		this.gameType = Game.Types[ 0 ];
+		this.selectPlayers = true;
 		this.playerIDs = [];
 		this.playerPts = [];
-		this.shouldSelectPlayers = true;
+		this.team1 = { name: "", ids: [], pts: [] };
+		this.team2 = { name: "", ids: [], pts: [] };
 	}
 
 	setGame( typ = 0 ) {
@@ -46,10 +53,24 @@ export class Game {
 		return this.playerIDs;
 	}
 		
+    getPlayerName( players: Player[], idx: number ) {
+      return (this.playerIDs.length > idx) ? players[this.playerIDs[idx]].name : "(None)";
+    }
+  
+    getPlayerID( idx: number ) {
+      return (this.playerIDs.length > idx) ? this.playerIDs[idx] : -1;
+    }
+  
 	getPlayerNames( players: Player[] ) {
 		let names = '';
 		this.playerIDs.map( (plyrId: number ) => ( names += ", " + players[plyrId].name ) );
 		return names.slice(2);
+	}
+	
+	getPlayerNamesArray( players: Player[] ) {
+		let names: string[] = [];
+		this.playerIDs.map( (plyrId: number ) => ( names.push( players[plyrId].name ) ) );
+		return names;
 	}
 	
 	getPlayersReqd() {
@@ -58,19 +79,45 @@ export class Game {
 	
 	getSelectPlayersPrompt( players: Player[] ) {
 		if ( players.length < this.gameType.playersReqd ) {
-			this.shouldSelectPlayers = false;
+			this.selectPlayers = false;
 			return "At least " + this.gameType.playersReqd + " required for this game.";
 		}
 		if ( players.length === this.gameType.playersReqd || this.gameType.playersReqd === 0 ) {
 			for ( var i = 0;  i < players.length;  i++ ) { this.playerIDs[i] = i; }
-			this.shouldSelectPlayers = false;
+			this.selectPlayers = false;
 			return "All players selected.";
 		}
-		this.shouldSelectPlayers = true;
+		this.selectPlayers = true;
 		return "Select " + this.getPlayersReqd() + " players:";
 	}
 	
-	getShouldSelectPlayers() { return this.shouldSelectPlayers; }
+	shouldSelectPlayers() { return this.selectPlayers; }
+	
+	isTeamGame() { return this.gameType.team; }
+	
+    setTeams( players: Player[], team: number[] ) {
+        // Set team1 player indicies from given array, team2 indices are player indicies not in given array.
+        // (Assumes team.length = 2 and setPlayers invoked.)
+        this.team1.ids = team;
+        for ( let i = 0;  i < this.playerIDs.length;  i++ ) {
+            let playerIdx = this.playerIDs[i];
+            if ( playerIdx !== team[0] && playerIdx !== team[1] )  this.team2.ids.push( playerIdx );
+        }
+        this.team1.name = players[ team[0] ].name + "/" + players[ team[1] ].name;
+        this.team2.name = players[ this.team2.ids[0] ].name + "/" + players[ this.team2.ids[1] ].name;
+    }	
+	
+	shouldSelectTeams() {
+        return (this.gameType.team && this.team1.ids.length === 0) ? true : false;	
+	}
+
+	getNetScore( course:Course18, hole:number, player:Player ) {
+		return ( course.isStrokeHole( hole, player.hdcp ) ) ? player.score[hole - 1] - 1 : player.score[hole - 1];
+	}
+	
+	getPointScore( score:number, par:number ) {
+		return ( score < 7 ) ? Game.PointValues[ (score - par) + 3 ] : 0;
+	}
 
 	determinePoints( players: Player[], course: Course18, holeNumber: number ) {
 		const holeIdx = holeNumber - 1;
@@ -143,21 +190,72 @@ export class Game {
 			this.playerPts[2][holeIdx] = p3;			
 			break;
 			
-		case "BestBall - Strokes":
-		case "BestBall - Points":
-			//teamGame();
+		case "Best Ball - Strokes":
+		case "Best Ball - Points":
+		case "Best Ball - Sixes":
+//			this.determineTeamPoints( players, course, holeNumber );
 			break;
 		}
 	}
 	
-	getNetScore( course:Course18, hole:number, player:Player ) {
-		return ( course.isStrokeHole( hole, player.hdcp ) ) ? player.score[hole - 1] - 1 : player.score[hole - 1];
+    determineTeamPoints( players: Player[], course: Course18, holeNumber: number ) {
+        const holeIdx = holeNumber - 1;
+		// Handle team games...  get scores for all players in game and determine team scores.
+		// Here we set player1, player2 from team1, player3, player4 from team2.
+		const player1 = players[ this.team1.ids[0] ];
+		let p1Score = this.getNetScore( course, holeNumber, player1 );
+		const player2 = players[ this.team1.ids[1] ];
+		let p2Score = this.getNetScore( course, holeNumber, player2 );
+		const player3 = players[ this.team2.ids[0] ];
+		let p3Score = this.getNetScore( course, holeNumber, player3 );
+		const player4 = players[ this.team2.ids[1] ];
+		let p4Score = this.getNetScore( course, holeNumber, player4 );
+
+		// Find best ball for each team.
+		var team1Score = ( p1Score <= p2Score ) ? p1Score : p2Score;
+		var team2Score = ( p3Score <= p4Score ) ? p3Score : p4Score;
+		
+		switch ( this.gameType.name ) {
+		
+		case "Best Ball - Strokes":
+			if ( team1Score < team2Score ) {
+				team1Score = 1;  team2Score = -1;
+			} else if ( team2Score < team1Score ) {
+				team1Score = -1;  team2Score = 1;
+			} else {
+				team1Score = team2Score = 0;
+			}
+			
+			// Set the team points based on the best ball.
+			this.team1.pts[ holeIdx ] = team1Score;
+			this.team2.pts[ holeIdx ] = team2Score;				
+			break;
+		
+		case "Best Ball - Points":
+			const par = course.getPar( holeNumber );
+			
+			// Set each player's points.
+			this.playerPts[0][holeIdx] = this.getPointScore( p1Score, par);
+			this.playerPts[1][holeIdx] = this.getPointScore( p2Score, par);
+			this.playerPts[2][holeIdx] = this.getPointScore( p3Score, par);
+			this.playerPts[3][holeIdx] = this.getPointScore( p4Score, par);
+			
+			// Set the team points based on the best ball.
+			this.team1.pts[ holeIdx ] = this.getPointScore( team1Score, par );
+			this.team2.pts[ holeIdx ] = this.getPointScore( team2Score, par );
+			break;
+		}
 	}
 	
-	getPointScore( score:number, par:number ) {
-		return ( score < 7 ) ? Game.PointValues[ (score - par) + 3 ] : 0;
+	getTeamPoints( theTeam: number, theHole: number ) {
+		// Return total points for theTeam (1 or 2) up to and including theHole.
+		var total = 0;
+		for ( let h = 0;  h < theHole && h < 18;  h++ )
+			total += ( theTeam === 1 ) ? this.team1.pts[ h ] : this.team2.pts[ h ];
+			
+		return total;
 	}
-
+	
 	renderScoreCard( players: Player[], course: Course18 ) {
 	    //var html = "<h4>Game: " + this.getName() + "</h4>";
 		var html = "<table><tr style=\"background-color:DodgerBlue;\"><td>Hole:</td>";
@@ -187,6 +285,8 @@ export class Game {
 	    for ( var plyrId = 0;  plyrId < this.playerIDs.length;  plyrId++ ) {
 		    const player = players[plyrId];
 		    var frontScore = 0, backScore = 0, frontPts = 0, backPts = 0;
+		    
+		    // Table row for player scores
 	        html += "<tr><th>" + player.name + "</th>";
 	   	    for ( h = 1;  h <= 18;  h++ ) {
 				let strokeHole = course.isStrokeHole( h, player.hdcp );
@@ -204,20 +304,45 @@ export class Game {
 	   	    }
 	   	    html += "<th>" + backScore + "</th><th>" + (frontScore + backScore) + "</th></tr>\n";
 	   	    
-	        html += "<tr><td></td>";
+	   	    // Table row for player points, unless team game.
+	   	    if ( ! this.isTeamGame() ) {
+		        html += "<tr><td></td>";
+		   	    for ( h = 1;  h <= 18;  h++ ) {
+		            if ( h <= player.score.length ) {
+		                this.determinePoints( players, course, h );
+						const pts = this.playerPts[plyrId][ h - 1 ];
+		   	    	    html += "<td>" + pts + "</td>";
+		   	    	    if ( h <= 9 ) frontPts += pts; else backPts += pts;
+		            } else {
+		                html += "<td></td>";
+		            }
+		   	    	if ( h === 9 )
+		   	    		html += "<td>" + frontPts + "</td><td></td>";
+		   	    }
+		   	    html += "<td>" + backPts + "</td><td>" + (frontPts + backPts) + "</td></tr>\n";
+	   	    }
+	    };
+	    
+	    if ( this.isTeamGame() ) {
+	      for ( let i = 0;  i < 2;  i++ ) {
+	        let team = (i === 0) ? this.team1 : this.team2;
+		    frontPts = 0; backPts = 0;
+	        html += "<tr><th>" + team.name + "</th>";
 	   	    for ( h = 1;  h <= 18;  h++ ) {
-	            if ( h <= this.playerPts[plyrId].length ) {
-					const pts = this.playerPts[plyrId][ h - 1 ];
+	            if ( h <= players[0].score.length ) {
+	                this.determineTeamPoints( players, course, h );
+					const pts = team.pts[ h - 1 ];
 	   	    	    html += "<td>" + pts + "</td>";
 	   	    	    if ( h <= 9 ) frontPts += pts; else backPts += pts;
 	            } else {
 	                html += "<td></td>";
 	            }
 	   	    	if ( h === 9 )
-	   	    		html += "<td>" + frontPts + "</td><td></td>";
-	   	    }
-	   	    html += "<td>" + backPts + "</td><td>" + (frontPts + backPts) + "</td></tr>\n";
-	    };
+	   	    		html += "<td>" + frontPts + "</td><td></td>";	      
+	        }
+    	    html += "<td>" + backPts + "</td><td>" + (frontPts + backPts) + "</td></tr>\n";
+	      }
+	    }
 
 	    html += "</table>\n";
 

@@ -33,9 +33,9 @@ const Round: React.FC = () => {
   }
   
   const handleSetScores = ( players: Player[] ) => {
-	for ( var i = 0;  i < state.games.length;  i++ ) {
-		state.games[i].determinePoints( players, state.course18, hole );
-	}
+//	for ( var i = 0;  i < state.games.length;  i++ ) {
+//		state.games[i].determinePoints( players, state.course18, hole );
+//	}
 	dismissSetScores();
 	changeHole( hole + 1 );
   }
