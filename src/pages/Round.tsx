@@ -1,7 +1,7 @@
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar, useIonModal, IonButton,
   IonItem, IonGrid, IonRow, IonCol, IonLabel, IonSelect, IonSelectOption } from '@ionic/react';
 import { useContext, useState } from 'react';
-import { AppContext, Player } from '../State';
+import { AppContext, Player, Course } from '../State';
 import SetScoresModal from '../components/SetScoresModal';
 import { Game } from "../model/Game";
 import './Page.css';
@@ -9,7 +9,7 @@ import './Page.css';
 const Round: React.FC = () => {
 
   //const title = "Round";  Use course name as title instead.
-  
+// eslint-disable-next-line  
   const { state, dispatch } = useContext(AppContext);
 
   // Local state for hole number being scored.  We use the length of the players.score array to determine the number of holes played.  
@@ -67,6 +67,18 @@ const Round: React.FC = () => {
             <IonMenuButton />
           </IonButtons>
           <IonTitle>{state.course18.getName(hole)}</IonTitle>
+{ hole === 10 ? (          
+          <IonButtons slot="end">
+            <IonSelect placeholder="Change" interface="popover"
+                onIonChange={(e) => state.course18.setBack9( e.detail.value )}>
+              { state.courses.map( (course:Course, idx:number) => (
+              <IonSelectOption key={idx} value={idx}>{ course.name }</IonSelectOption>
+              ) )}
+            </IonSelect>
+          </IonButtons>
+) : (
+          <></>
+) }                    
         </IonToolbar>
       </IonHeader>
 
@@ -98,6 +110,7 @@ const Round: React.FC = () => {
           <IonLabel>{state.games[0].getName()}</IonLabel>        
         ) : (
           <IonSelect aria-label={state.games[gameDisplay].getName()} interface="popover"
+              placeholder={state.games[0].getName()}
               onIonChange={(e) => setGameDisplay( e.detail.value ) }>
             { state.games.map( (game:Game, idx:number) => (
             <IonSelectOption key={idx} value={idx}>{game.getName()}</IonSelectOption>

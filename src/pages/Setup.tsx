@@ -23,7 +23,8 @@ const Setup: React.FC = () => {
   const history = useHistory();
 
   // Local state to manage loading setup info.
-  const [setupData, setSetupData] = useState<SetupData>( { courses: [ { name: '<Add course>', pairedWith: '', pars: [], hdcps: [] } ], playerNames: [ '<Add player>' ] } );
+  const [setupData, setSetupData] = 
+    useState<SetupData>( { courses: [ { name: '<Add course>', pairedWith: '', pars: [], hdcps: [] } ], playerNames: [ '<Add player>' ] } );
   const [showWaiting, setShowWaiting] = useState(false);
   const [status, setStatus] = useState('');
   
@@ -58,7 +59,7 @@ const Setup: React.FC = () => {
 
   // Set course (front9/back9) from user selection of front 9.
   const setCourse = ( courseId: number ) => {
-	var back9 = setupData.courses.findIndex( (crs:Course) => crs.name === setupData.courses[courseId].pairedWith );
+	const back9 = setupData.courses.findIndex( (crs:Course) => crs.name === setupData.courses[courseId].pairedWith );
 	dispatch( {type: "setCourse18", newval: new Course18( state.courses, courseId, back9 )} );
 	console.log( "Front/Back: " + courseId + " / " + back9 );
     //console.log( "Setup courses: " + JSON.stringify( setupData.courses ) );

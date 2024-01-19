@@ -34,6 +34,12 @@ export class Course18 {
 	//public String getFront9()  {  return courseNames[ front9 ];  }
 	//public String getBack9()  {  return courseNames[ back9 ];  }
 
+   	// Allow back nine course to be changed mid-round.
+   	setBack9(back: number) {
+   		this.back9 = back;
+		this.backHdcps = this.convertHdcps(this.courses[this.back9].hdcps, 10);
+   	}
+
 	getPar(hole: number) {
 		let par = 0;
 		if (1 <= hole && hole <= 9)
