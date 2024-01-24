@@ -69,7 +69,7 @@ const Round: React.FC = () => {
           <IonTitle>{state.course18.getName(hole)}</IonTitle>
 { hole === 10 ? (          
           <IonButtons slot="end">
-            <IonSelect placeholder="Change" interface="popover"
+            <IonSelect aria-label="Change" placeholder="Change" interface="popover"
                 onIonChange={(e) => state.course18.setBack9( e.detail.value )}>
               { state.courses.map( (course:Course, idx:number) => (
               <IonSelectOption key={idx} value={idx}>{ course.name }</IonSelectOption>

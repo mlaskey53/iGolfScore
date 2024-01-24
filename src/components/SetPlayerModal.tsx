@@ -24,7 +24,8 @@ export const SetPlayerModal: React.FC<{
     <IonContent>
       <IonList>
         <IonItem>
-          <IonSelect placeholder={player.name} interface="action-sheet" onIonChange={(e) => { player.name = e.detail.value }}>
+          <IonSelect aria-label={player.name} placeholder={player.name} interface="action-sheet"
+            onIonChange={(e) => { player.name = e.detail.value }}>
             { playerNames.map( (name:string, idx:number) => (
             <IonSelectOption key={idx} value={name}>{name}</IonSelectOption>
             ) )}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
-   IonContent, IonList, IonItem, IonLabel, IonSelect, IonSelectOption, IonAlert } from '@ionic/react';
+   IonContent, IonList, IonItem, IonSelect, IonSelectOption, IonAlert } from '@ionic/react';
 import { Player } from '../State';
 import { Game, GameType } from '../model/Game';
 
@@ -65,8 +65,8 @@ export const SetGameModal = (
     <IonContent>
       <IonList>
         <IonItem>
-          <IonLabel><h2>Select Game Type:</h2></IonLabel>
-          <IonSelect slot="end" placeholder={Game.Types[0].name} interface="action-sheet"
+          {/*<IonLabel><h2>Select Game Type:</h2></IonLabel>*/}
+          <IonSelect label="Select Game:" placeholder={Game.Types[0].name} interface="action-sheet"
               onIonChange={(e) => { game.setGame( e.detail.value ); setGame( game ); 
                  setPlayerPrompt( game.getSelectPlayersPrompt( players ) ); setShowSelectPlayers( game.shouldSelectPlayers() ) } } >
             { Game.Types.map( (gameTyp: GameType, idx: number) => (
@@ -75,8 +75,8 @@ export const SetGameModal = (
           </IonSelect>
         </IonItem>
         <IonItem>
-          <IonLabel><h2>{ playerPrompt }</h2></IonLabel>
-          <IonSelect placeholder="" multiple={true} disabled={ !showSelectPlayers } 
+          {/*<IonLabel><h2>{ playerPrompt }</h2></IonLabel>*/}
+          <IonSelect label={playerPrompt} multiple={true} disabled={ !showSelectPlayers } 
               onIonChange={(e) => { game.setPlayers( e.detail.value ) }}>
             { players.map( (player: Player, idx: number) => (
             <IonSelectOption key={idx} value={idx}>{player.name}</IonSelectOption>

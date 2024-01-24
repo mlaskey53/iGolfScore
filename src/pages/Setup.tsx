@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { AppContext, Course, Player } from '../State';
 import { IonButtons, IonContent, IonHeader, IonFooter, IonMenuButton, IonPage, IonTitle, IonToolbar,
     IonList, IonItem, IonLabel, IonButton, IonIcon,
@@ -36,24 +37,52 @@ const Setup: React.FC = () => {
   const [showPlayerLimit, setShowPlayerLimit] = useState(false);
   const [showGameLimit, setShowGameLimit] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
-  
+
+  // Read setup data from local filesystem.
+  const readSetupFile = async () => {
+    try {
+      const res = await Filesystem.readFile( { path: 'setup.json', directory: Directory.Data, encoding: Encoding.UTF8 } );
+      if ( typeof res.data === 'string') {
+        console.log('Setup data from filesystem: ', res.data);
+        setSetupData( JSON.parse(res.data) );
+      } else console.log( "Blob returned from readFile." );
+    } catch (error) {
+      console.log( "Could not read setup file - reading from assets/json instead." );  
+      fetch( './assets/json/setup.json' )
+	    .then((response) => response.json())
+	    .then((respJSON) => { setSetupData(respJSON); setShowWaiting(false); })
+	    .catch((error) => { setStatus( 'Could not retrieve setup data: ' + error ); setShowWaiting(false); });
+    }
+  };
+
+  // Write setup data to local filesystem.  The data is written based on the platform:
+  // Browser: Creates a 'file' in the IndexDB storage under localhost:8100.
+  // Android/WebView: 
+  const writeSetupFile = async () => {
+    await Filesystem.writeFile( { path: 'setup.json', data: JSON.stringify( setupData ),
+      directory: Directory.Data, encoding: Encoding.UTF8 } );
+  };
+
   // Get saved course, player names from setup data file.
-  // Note: this useEffect is run only once on load due to the empty dependency array specifie as the second argument.
+  // Note: this useEffect is run only once on load due to the empty dependency array specified as the second argument.
   // eslint-disable-next-line
   useEffect(() => {
-	fetch( './assets/json/setup.json' )
-	  .then((response) => response.json())
-	  .then((respJSON) => { 
-		  setSetupData(respJSON); setShowWaiting(false);
-		})
-	  .catch((error) => { setStatus( 'Could not retrieve setup data: ' + error ); setShowWaiting(false); });
+    readSetupFile();
+//      console.log( "Could not read setup file - reading from assets/json instead." );  
+//      fetch( './assets/json/setup.json' )
+//	    .then((response) => response.json())
+//	    .then((respJSON) => { 
+//		    setSetupData(respJSON); setShowWaiting(false);
+//		  })
+//	    .catch((error) => { setStatus( 'Could not retrieve setup data: ' + error ); setShowWaiting(false); });
   }, []);
 
   // Set courses info into global state.
   // Need to do this via useEffect since the above fetch is asynchronous.  We make it dependent on setupData
   // which will be set after the fetch completes.  
   useEffect(() => {
-    dispatch( { type: 'setCourses', newval: setupData.courses.slice(0) } );	
+    dispatch( { type: 'setCourses', newval: setupData.courses.slice(0) } );
+    writeSetupFile();
 // eslint-disable-next-line
   }, [setupData]);
 
@@ -155,8 +184,8 @@ const Setup: React.FC = () => {
         
         <IonList>
         <IonItem>
-          <IonLabel><h2>Course:</h2></IonLabel>
-          <IonSelect placeholder="Select course" slot="end" interface="action-sheet"
+          {/*<IonLabel><h2>Course:</h2></IonLabel>*/}
+          <IonSelect label="Course:" placeholder="Select course" interface="action-sheet"
               onIonChange={(e) => setCourse( e.detail.value)}>
             { setupData.courses.map( (course:Course, idx:number) => (
             <IonSelectOption key={idx} value={idx}>{ course.name }</IonSelectOption>

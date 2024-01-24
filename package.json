@@ -1,16 +1,18 @@
 {
   "name": "golfscore",
-  "version": "0.0.1",
+  "version": "2.1.1",
   "private": true,
   "dependencies": {
-    "@capacitor/android": "4.7.1",
-    "@capacitor/app": "4.1.1",
-    "@capacitor/core": "4.7.1",
-    "@capacitor/haptics": "4.1.0",
-    "@capacitor/keyboard": "4.1.1",
-    "@capacitor/status-bar": "4.1.1",
-    "@ionic/react": "^6.0.0",
-    "@ionic/react-router": "^6.0.0",
+    "@capacitor/android": "5.5.0",
+    "@capacitor/app": "5.0.6",
+    "@capacitor/core": "5.5.0",
+    "@capacitor/filesystem": "^5.2.0",
+    "@capacitor/haptics": "5.0.6",
+    "@capacitor/keyboard": "5.0.6",
+    "@capacitor/status-bar": "5.0.6",
+    "@ionic/core": "^7.6.5",
+    "@ionic/react": "^7.6.5",
+    "@ionic/react-router": "^7.6.5",
     "@ionic/storage": "^3.0.6",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^13.3.0",
@@ -56,15 +58,16 @@
     ]
   },
   "browserslist": [
-    "Chrome >=60",
-    "ChromeAndroid >=60",
-    "Firefox >=63",
+    "Chrome >=79",
+    "ChromeAndroid >=79",
+    "Firefox >=70",
     "Edge >=79",
-    "Safari >=13",
-    "iOS >=13"
+    "Safari >=14",
+    "iOS >=14"
   ],
   "devDependencies": {
-    "@capacitor/cli": "4.7.1"
+    "@babel/plugin-proposal-private-property-in-object": "^7.18.0",
+    "@capacitor/cli": "^5.5.0"
   },
   "description": "An Ionic project"
 }
