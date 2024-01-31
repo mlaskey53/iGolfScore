@@ -12,7 +12,7 @@ import { Course18 } from "../model/Course18";
 import SetPlayerModal from '../components/SetPlayerModal';
 import SetGameModal from '../components/SetGameModal';
 
-interface SetupData {
+export interface SetupData {
 	courses: Course[];
 	playerNames: string[];
 }
@@ -57,7 +57,7 @@ const Setup: React.FC = () => {
 
   // Write setup data to local filesystem.  The data is written based on the platform:
   // Browser: Creates a 'file' in the IndexDB storage under localhost:8100.
-  // Android/WebView: 
+  // Android/WebView: data/data/io.ionic.starter/files/setup.json
   const writeSetupFile = async () => {
     await Filesystem.writeFile( { path: 'setup.json', data: JSON.stringify( setupData ),
       directory: Directory.Data, encoding: Encoding.UTF8 } );
@@ -68,19 +68,13 @@ const Setup: React.FC = () => {
   // eslint-disable-next-line
   useEffect(() => {
     readSetupFile();
-//      console.log( "Could not read setup file - reading from assets/json instead." );  
-//      fetch( './assets/json/setup.json' )
-//	    .then((response) => response.json())
-//	    .then((respJSON) => { 
-//		    setSetupData(respJSON); setShowWaiting(false);
-//		  })
-//	    .catch((error) => { setStatus( 'Could not retrieve setup data: ' + error ); setShowWaiting(false); });
   }, []);
 
   // Set courses info into global state.
   // Need to do this via useEffect since the above fetch is asynchronous.  We make it dependent on setupData
   // which will be set after the fetch completes.  
   useEffect(() => {
+    dispatch( { type: 'setPlayerNames', newval: setupData.playerNames } );
     dispatch( { type: 'setCourses', newval: setupData.courses.slice(0) } );
     writeSetupFile();
 // eslint-disable-next-line
@@ -88,7 +82,7 @@ const Setup: React.FC = () => {
 
   // Set course (front9/back9) from user selection of front 9.
   const setCourse = ( courseId: number ) => {
-	const back9 = setupData.courses.findIndex( (crs:Course) => crs.name === setupData.courses[courseId].pairedWith );
+	const back9 = state.courses.findIndex( (crs:Course) => crs.name === state.courses[courseId].pairedWith );
 	dispatch( {type: "setCourse18", newval: new Course18( state.courses, courseId, back9 )} );
 	console.log( "Front/Back: " + courseId + " / " + back9 );
     //console.log( "Setup courses: " + JSON.stringify( setupData.courses ) );
@@ -110,7 +104,7 @@ const Setup: React.FC = () => {
   
   const [presentAddPlayer, dismissAddPlayer] = useIonModal( SetPlayerModal, {
     modalTitle: "Add Player",
-    playerNames: setupData.playerNames,
+    playerNames: state.playerNames,
     player: { name: 'Select name', hdcp: 0, bonus: 0 },
     onDismiss: handleAddPlayerDismiss,
     onSave: handleAddPlayer
@@ -130,7 +124,7 @@ const Setup: React.FC = () => {
   
   const [presentEditPlayer, dismissEditPlayer] = useIonModal( SetPlayerModal, {
     modalTitle: "Edit Player",
-    playerNames: setupData.playerNames,
+    playerNames: state.playerNames,
     player: state.players[ playerIdx ],
     onDismiss: handleEditPlayerDismiss,
     onSave: handleEditPlayer
@@ -157,7 +151,7 @@ const Setup: React.FC = () => {
     onDismiss: handleAddGameDismiss,
     onSave: handleAddGame
   } )
-  
+
   const resetSetup = () => {
 	//dispatch( { type: "setCourse18", newval: new Course18( [], 0, 0 )} );
 	dispatch( { type: 'setPlayers', newval: [] } );
@@ -169,8 +163,10 @@ const Setup: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start"><IonMenuButton /></IonButtons>
-          <IonTitle>Setup</IonTitle>
-          <IonButtons slot="end"><IonButton onClick={() => setShowResetConfirm(true) }>Reset</IonButton></IonButtons>
+          <IonTitle>Setup Round</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={() => setShowResetConfirm(true) }>Reset</IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -184,10 +180,9 @@ const Setup: React.FC = () => {
         
         <IonList>
         <IonItem>
-          {/*<IonLabel><h2>Course:</h2></IonLabel>*/}
           <IonSelect label="Course:" placeholder="Select course" interface="action-sheet"
-              onIonChange={(e) => setCourse( e.detail.value)}>
-            { setupData.courses.map( (course:Course, idx:number) => (
+              onIonChange={(e) => setCourse( e.detail.value )}>
+            { state.courses.map( (course:Course, idx:number) => (
             <IonSelectOption key={idx} value={idx}>{ course.name }</IonSelectOption>
             ) )}
           </IonSelect>
@@ -220,7 +215,8 @@ const Setup: React.FC = () => {
         <IonList>
         <IonItem>
           <IonLabel><h2>Games:</h2></IonLabel>
-           <IonButton slot='end' onClick={() => { if (state.games.length < 3) { presentAddGame() } else { setShowGameLimit(true) } }}>
+           <IonButton slot='end' disabled={(state.players.length < 2) ? true : false}
+             onClick={() => { if (state.games.length < 3) { presentAddGame() } else { setShowGameLimit(true) } }}>
              <IonIcon icon={golf} />
            </IonButton>
         </IonItem>

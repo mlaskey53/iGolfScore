@@ -1,32 +1,16 @@
 import { IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader,
-  IonMenu, IonMenuToggle, IonNote
-} from '@ionic/react';
-
+  IonMenu, IonMenuToggle, IonNote } from '@ionic/react';
 import { useLocation } from 'react-router-dom';
-import { settingsOutline, settingsSharp, golfOutline, golfSharp } from 'ionicons/icons';
+import { peopleOutline, peopleSharp, settingsOutline, settingsSharp, golfOutline, golfSharp } from 'ionicons/icons';
 import './Menu.css';
 import Config from '../Config';
 
-interface AppPage {
-  url: string;
-  iosIcon: string;
-  mdIcon: string;
-  title: string;
-}
+interface AppPage { url: string; iosIcon: string; mdIcon: string; title: string; }
 
 const appPages: AppPage[] = [
-  {
-    title: 'Setup',
-    url: '/page/Setup',
-    iosIcon: settingsOutline,
-    mdIcon: settingsSharp
-  },
-  {
-    title: 'Round',
-    url: '/page/Round',
-    iosIcon: golfOutline,
-    mdIcon: golfSharp
-  },
+  { title: 'Setup', url: '/page/Setup', iosIcon: peopleOutline, mdIcon: peopleSharp },
+  { title: 'Round', url: '/page/Round', iosIcon: golfOutline, mdIcon: golfSharp },
+  { title: 'Configure', url: '/page/Configure', iosIcon: settingsOutline, mdIcon: settingsSharp },
 ];
 
 

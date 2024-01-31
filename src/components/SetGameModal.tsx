@@ -22,16 +22,17 @@ export const SetGameModal = (
   const [showTeamSelect, setShowTeamSelect] = useState(false);
 
   function checkGame( game: Game ) {
-	// See if we should select all players (i.e., if players.length = game.playersReqd)
-	if ( game.getPlayers.length === 0 && players.length === game.getPlayersReqd() ) {
+	// See if we should select all players (i.e., if players.length = game.playersReqd).
+	// Note: game.playersReqd could be 0, indicating any number of players are ok.
+	const gamePlayersReqd = (game.getPlayersReqd() > 0 ) ? game.getPlayersReqd() : players.length;
+	if ( game.getPlayers.length === 0 && players.length === gamePlayersReqd ) {
 		game.setPlayers( Array.from({ length: players.length }, (val, idx) => idx) );
-	}
-	if ( game.getPlayers().length !== game.getPlayersReqd() ) {
+	};
+	if ( game.getPlayers().length !== gamePlayersReqd ) {
 	  setShowSelectPlayers(true);
 	} else if ( game.shouldSelectTeams() ) {
       setShowTeamSelect(true);
 	} else {
-//	  console.log( "Game not added! all=" + players.length + ", game=" + game.getPlayers() + ", reqd=" + game.getPlayersReqd() ); 
       onSave( game );
     }
   }

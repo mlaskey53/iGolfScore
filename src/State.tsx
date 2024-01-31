@@ -20,6 +20,7 @@ export type Player = {
 }
 
 export type AppState = {
+  playerNames: string[];
   courses: Course[];
   course18: Course18;
   games: Game[];
@@ -27,6 +28,7 @@ export type AppState = {
 }
 
 const initialState: AppState = {
+  playerNames: [],
   courses: [],
   course18: new Course18( [], 0, 0 ),
   games: [],
@@ -38,6 +40,8 @@ let AppContext = createContext( {} as any );
 let reducer = (state: AppState, action: { type: string; newval: any; }) => {
   console.log( "Dispatch: action=" + action.type + ", newval=" + JSON.stringify( action.newval ) );
   switch(action.type) {
+    case "setPlayerNames":
+      return { ...state, playerNames: action.newval }
     case "setCourses":
       return { ...state, courses: action.newval }
     case "setCourse18":
