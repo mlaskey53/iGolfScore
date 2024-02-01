@@ -55,14 +55,6 @@ const Setup: React.FC = () => {
     }
   };
 
-  // Write setup data to local filesystem.  The data is written based on the platform:
-  // Browser: Creates a 'file' in the IndexDB storage under localhost:8100.
-  // Android/WebView: data/data/io.ionic.starter/files/setup.json
-  const writeSetupFile = async () => {
-    await Filesystem.writeFile( { path: 'setup.json', data: JSON.stringify( setupData ),
-      directory: Directory.Data, encoding: Encoding.UTF8 } );
-  };
-
   // Get saved course, player names from setup data file.
   // Note: this useEffect is run only once on load due to the empty dependency array specified as the second argument.
   // eslint-disable-next-line
@@ -76,7 +68,7 @@ const Setup: React.FC = () => {
   useEffect(() => {
     dispatch( { type: 'setPlayerNames', newval: setupData.playerNames } );
     dispatch( { type: 'setCourses', newval: setupData.courses.slice(0) } );
-    writeSetupFile();
+//    writeSetupFile();
 // eslint-disable-next-line
   }, [setupData]);
 

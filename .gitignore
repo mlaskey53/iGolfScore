@@ -31,3 +31,4 @@ yarn-error.log*
 /.classpath
 /.project
 /android/
+/local.properties

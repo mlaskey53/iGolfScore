@@ -15,25 +15,50 @@ const Configure: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState(0);
   
   // Local state to manage various alert pop-ups.
+  const [changedConfig, setChangedConfig] = useState(false);
   const [showEditPlayerNames, setShowEditPlayerNames] = useState(false);
-  const [playerNames, setPlayerNames] = useState<string>(state.playerNames.toString());
-//  const [courses, setCourses] = useState(state.courses);
+//  const [playerNames, setPlayerNames] = useState<string>(state.playerNames.toString());
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   // Write setup data to local filesystem.  The data is written based on the platform:
-  // Browser: Creates a 'file' in the IndexDB storage under localhost:8100.
-  // Android/WebView: 
-  const writeSetupFile = async ( configData: any ) => {
-    await Filesystem.writeFile( { path: 'setup.json', data: JSON.stringify( configData ),
+  // Browser: Creates a 'file' in the IndexDB storage under localhost:8100/files.
+  // Android/WebView: data/data/io.ionic.starter/files/setup.json
+  const writeSetupFile = async () => {
+    const setupData = { 'playerNames': state.playerNames, 'courses': state.courses };
+    await Filesystem.writeFile( { path: 'setup.json', data: JSON.stringify( setupData ),
       directory: Directory.Data, encoding: Encoding.UTF8 } );
+    console.log( "Wrote setup data to local file." );
+    setChangedConfig(false);
   };
 
+  // Validate and save entire configuration to local file.
+  const handleSaveConfiguration = () => {
+    // Ensure course 'pairedWith' names exist as 'name' value if non-blank.
+    var arePaired = true;
+    var coursesDefined = "";
+    var orphans = "";
+    state.courses.forEach( (course: Course, ids: number) => coursesDefined += (course.name + " ") );
+    state.courses.forEach( (course: Course, ids: number) => {
+      if ( course.pairedWith !== "" && coursesDefined.indexOf( course.pairedWith ) < 0 ) {
+        arePaired = false;
+        orphans += (course.pairedWith + " ");
+      }
+    } );
+    if ( arePaired )
+      writeSetupFile();
+    else {
+      setErrorMsg( "Course not defined for following 'Paired With' name(s): " + orphans );
+      setShowError(true);
+    }
+  }
+  
   const handleSavePlayerNames = ( namesStr: string ) => {
     var names = namesStr.split(',');
     if ( names.length > 0 ) {
       dispatch( { type: 'setPlayerNames', newval: names } );
+      setChangedConfig(true);
     } else {
       setErrorMsg( "Please specify at least one Player name." );
       setShowError(true);
@@ -43,6 +68,7 @@ const Configure: React.FC = () => {
   const removeCourse = () => {
 	state.courses.splice( selectedCourse, 1 );
 	setSelectedCourse(0);
+    setChangedConfig(true);
 //	dispatch( { type: 'setCourses', newval: state.courses } );
   }
 
@@ -50,6 +76,7 @@ const Configure: React.FC = () => {
 	if ( selectedCourse >= state.courses.length )  dismissAddCourse(); else  dismissEditCourse();
     console.log( "Setting state.courses[" + selectedCourse + "] to: " + JSON.stringify( course ) );
     state.courses[selectedCourse] = course;
+    setChangedConfig(true);
 //    writeSetupFile();
 //    console.log( "Setup data change written to file." );
   }
@@ -71,7 +98,9 @@ const Configure: React.FC = () => {
   
   const [presentEditCourse, dismissEditCourse] = useIonModal( SetCourseModal, {
     modalTitle: "Edit Course",
-    course: structuredClone(state.courses[selectedCourse]),
+//    course: structuredClone(state.courses[selectedCourse]),  doesn't work on Android WebKit
+//    course: JSON.parse( JSON.stringify(state.courses[selectedCourse]) ),
+    course: { ...state.courses[selectedCourse] },
     onDismiss: handleCourseDismiss,
     onSave: handleCourseChange
   } )
@@ -82,6 +111,9 @@ const Configure: React.FC = () => {
         <IonToolbar>
           <IonButtons slot="start"><IonMenuButton /></IonButtons>
           <IonTitle>Configure Player Names / Courses</IonTitle>
+          <IonButtons slot="end">
+            <IonButton disabled={! changedConfig} onClick={() => handleSaveConfiguration() }>Save</IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -101,7 +133,7 @@ const Configure: React.FC = () => {
           </IonButton>
         </IonItem>
         <IonItem>
-          <IonLabel><h3>{playerNames}</h3></IonLabel>
+          <IonLabel><h3>{state.playerNames.toString()}</h3></IonLabel>
         </IonItem>
         </IonList>
         
@@ -129,10 +161,10 @@ const Configure: React.FC = () => {
          header={"Enter/Edit Player Names:"}
          buttons={[
            { text: 'Cancel', role: 'cancel', cssClass: 'secondary', id: 'cancel-button', handler: () => {} },
-           { text: 'OK', id: 'confirm-button', handler: (data) => { setPlayerNames(data.plyrnms); handleSavePlayerNames(data.plyrnms); } }
+           { text: 'Done', id: 'confirm-button', handler: (data) => { handleSavePlayerNames(data.plyrnms); } }
          ]}
          inputs={[
-           { name: "plyrnms", value: playerNames }
+           { name: "plyrnms", value: state.playerNames.toString() }
          ]}
        />
        
