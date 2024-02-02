@@ -64,9 +64,22 @@ export class Game {
     }
   
 	getPlayerNames( players: Player[] ) {
-		let names = '';
-		this.playerIDs.map( (plyrId: number ) => ( names += ", " + players[plyrId].name ) );
-		return names.slice(2);
+		var result = "";
+		if ( this.gameType.team && this.team1.ids.length > 0 && this.team2.ids.length > 0 ) {
+			// Return "P1/P2 v. P3/P4"
+			let teamNms = "";
+			this.team1.ids.map( (plyrId: number ) => ( teamNms += "/" + players[plyrId].name ) );
+			result = teamNms.slice(1);
+			teamNms = "";
+			this.team2.ids.map( (plyrId: number ) => ( teamNms += "/" + players[plyrId].name ) );
+			result += " v. " + teamNms.slice(1);
+		} else {
+			// Return "P1, P2, P3, P4"
+			let names = '';
+			this.playerIDs.map( (plyrId: number ) => ( names += ", " + players[plyrId].name ) );
+			result = names.slice(2);
+		}
+		return result;
 	}
 	
 	getPlayerNamesArray( players: Player[] ) {
