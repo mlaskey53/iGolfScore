@@ -110,7 +110,7 @@ const Configure: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start"><IonMenuButton /></IonButtons>
-          <IonTitle>Configure Player Names / Courses</IonTitle>
+          <IonTitle>Configure</IonTitle>
           <IonButtons slot="end">
             <IonButton disabled={! changedConfig} onClick={() => handleSaveConfiguration() }>Save</IonButton>
           </IonButtons>

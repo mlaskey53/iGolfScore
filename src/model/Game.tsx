@@ -2,7 +2,7 @@
 import { Player } from '../State';
 import { Course18 } from './Course18';
 
-export 	interface GameType { name: string; playersReqd: number; team?: boolean };
+export 	interface GameType { name: string; playersReqd: number; team?: boolean; begHole?: number; endHole?: number };
 
 export interface Team { name: string, ids: number[], pts: number[] }	
 
@@ -15,7 +15,9 @@ export class Game {
 		{ name: "9-Points", playersReqd: 3, team: false },
 		{ name: "Best Ball - Strokes", playersReqd: 4, team: true },
 		{ name: "Best Ball - Points", playersReqd: 4, team: true },
-		{ name: "Best Ball - Sixes", playersReqd: 4, team: true }
+		{ name: "Best Ball - Sixes (1-6)", playersReqd: 4, team: true, begHole: 1, endHole: 6 },
+		{ name: "Best Ball - Sixes (7-12)", playersReqd: 4, team: true, begHole: 7, endHole: 12 },
+		{ name: "Best Ball - Sixes (13-18)", playersReqd: 4, team: true, begHole: 13, endHole: 18 }
 	];
 	
 	public static PointValues = [ 5, 4, 3, 2, 1, 0, 0, 0, 0, 0 ];  // Points for hole-in-one, eagle, birdie, etc.
@@ -110,6 +112,16 @@ export class Game {
 	shouldSelectTeams() {
         return (this.gameType.team && this.team1.ids.length === 0) ? true : false;	
 	}
+	
+	shouldShowPoints( hole:number ) {
+		// Determine if game points should be displayed on score card.  True for all games except Sixes,
+		// where it's true only if hole is between begHole and endHole.
+		var shouldShow = true;
+		if ( Object.hasOwn(this.gameType, 'begHole') ) {
+			shouldShow = ( hole < this.gameType.begHole! || hole > this.gameType.endHole! ) ? false : true;
+		}
+		return shouldShow;
+	}
 
 	getNetScore( course:Course18, hole:number, player:Player ) {
 		return ( course.isStrokeHole( hole, player.hdcp ) ) ? player.score[hole - 1] - 1 : player.score[hole - 1];
@@ -190,11 +202,6 @@ export class Game {
 			this.playerPts[2][holeIdx] = p3;			
 			break;
 			
-		case "Best Ball - Strokes":
-		case "Best Ball - Points":
-		case "Best Ball - Sixes":
-//			this.determineTeamPoints( players, course, holeNumber );
-			break;
 		}
 	}
 	
@@ -215,9 +222,7 @@ export class Game {
 		var team1Score = ( p1Score <= p2Score ) ? p1Score : p2Score;
 		var team2Score = ( p3Score <= p4Score ) ? p3Score : p4Score;
 		
-		switch ( this.gameType.name ) {
-		
-		case "Best Ball - Strokes":
+		if ( this.gameType.name.indexOf("Points" ) < 0 ) {
 			if ( team1Score < team2Score ) {
 				team1Score = 1;  team2Score = -1;
 			} else if ( team2Score < team1Score ) {
@@ -229,9 +234,7 @@ export class Game {
 			// Set the team points based on the best ball.
 			this.team1.pts[ holeIdx ] = team1Score;
 			this.team2.pts[ holeIdx ] = team2Score;				
-			break;
-		
-		case "Best Ball - Points":
+		} else {
 			const par = course.getPar( holeNumber );
 			
 			// Set each player's points.
@@ -243,7 +246,6 @@ export class Game {
 			// Set the team points based on the best ball.
 			this.team1.pts[ holeIdx ] = this.getPointScore( team1Score, par );
 			this.team2.pts[ holeIdx ] = this.getPointScore( team2Score, par );
-			break;
 		}
 	}
 	
@@ -322,14 +324,15 @@ export class Game {
 		   	    html += "<td>" + backPts + "</td><td>" + (frontPts + backPts) + "</td></tr>\n";
 	   	    }
 	    };
-	    
+
+        // If team game, add rows showing team scores.	    
 	    if ( this.isTeamGame() ) {
 	      for ( let i = 0;  i < 2;  i++ ) {
 	        let team = (i === 0) ? this.team1 : this.team2;
 		    frontPts = 0; backPts = 0;
 	        html += "<tr><th>" + team.name + "</th>";
 	   	    for ( h = 1;  h <= 18;  h++ ) {
-	            if ( h <= players[0].score.length ) {
+	            if ( this.shouldShowPoints(h) && h <= players[0].score.length ) {
 	                this.determineTeamPoints( players, course, h );
 					const pts = team.pts[ h - 1 ];
 	   	    	    html += "<td>" + pts + "</td>";
