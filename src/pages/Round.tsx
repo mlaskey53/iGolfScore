@@ -16,26 +16,25 @@ const Round: React.FC = () => {
   const [hole, setHole] = useState(1);
   
   const changeHole = (val: number) => {
-    // Only allow current hole to be incremented to the number of holes played + 1.
-	if ( val >= 1 && val <= ( state.players[0].score.length + 1) ) {
+    // Only allow current hole to be incremented to the number of holes played + 1 up to 18.
+	if ( val >= 1 && val <= ( state.players[0].score.length + 1) && val <= 18 ) {
 	  setHole( val );
 	}
   };
   
   // Functions for player scores modal:
   const displaySetScores = () => {
+    // Ensure local state hole number is still in sync with players.score - Setup could have been reset.
+    if ( hole > state.players[0].score.length + 1 ) setHole( state.players[0].score.length + 1 );
+    
 	// Determine par for current hole, if players score is not already set, set it to par initially so it will be the default score.
 	state.players.forEach( (plyr: Player) => {
-		//if ( plyr.score[hole - 1] === undefined ) { plyr.score[hole - 1] = state.course18.getPar(hole); }
 		if ( plyr.score.length < hole )  plyr.score.push( state.course18.getPar(hole) );
 	} );
 	presentSetScores();
   }
   
   const handleSetScores = ( players: Player[] ) => {
-//	for ( var i = 0;  i < state.games.length;  i++ ) {
-//		state.games[i].determinePoints( players, state.course18, hole );
-//	}
 	dismissSetScores();
 	changeHole( hole + 1 );
   }
@@ -49,7 +48,7 @@ const Round: React.FC = () => {
   }
   
   const [presentSetScores, dismissSetScores] = useIonModal( SetScoresModal, {
-    modalTitle: "Enter Player Scores",
+    modalTitle: "Enter Scores",
     hole: hole,
     players: state.players,
     onClose: handleCloseScores,
@@ -95,7 +94,7 @@ const Round: React.FC = () => {
           <IonRow>
           <IonCol> <h3>Hole: </h3> </IonCol>
           <IonCol><IonButton onClick={() => changeHole( hole - 1 )}>-</IonButton></IonCol>
-          <IonCol> <h3>{ hole }</h3> </IonCol>
+          <IonCol> <h3>{ (hole > state.players[0].score.length + 1) ? state.players[0].score.length + 1 : hole }</h3> </IonCol>
           <IonCol><IonButton onClick={() => changeHole( hole + 1 )}>+</IonButton></IonCol>
 		  <IonCol size="4">
             <IonButton onClick={() => { if ( hole <= 18 ) { displaySetScores() } }}>
