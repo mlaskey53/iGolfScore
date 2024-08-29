@@ -1,6 +1,6 @@
 {
-  "name": "golfscore",
-  "version": "2.1.1",
+  "name": "iGolfScore",
+  "version": "2.2.5",
   "private": true,
   "dependencies": {
     "@capacitor/android": "5.6.0",

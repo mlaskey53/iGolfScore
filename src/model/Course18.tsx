@@ -59,26 +59,25 @@ export class Course18 {
 		return hdcp;
 	}
 
-	isStrokeHole(hole: number, playerHdcp: number) {
+	getStrokesForHole(hole: number, playerHdcp: number) {
 		/**
-		 * Determines if given hole is a stroke hole based on player's handicap.
-		 * The player's given handicap is assumed to be based on 18 holes.
+		 * Determines stokes deducted for given hole based on player's handicap.
+		 * The player's handicap is assumed to be based on 18 holes (and at most 36).
 		 * 
 		 * The course hole handicaps are given per 9 holes via holeHdcps,
 		 * and are assumed to be in terms of 18 holes (values from 1-18).
 		 * (If hole is > 9, then the back nine course handicaps are assumed given.)
-		 * 
-		 * Note: Not sure what happens if a player's hdcp is > 18, more than 1 stroke a hole?
-		 * We'll just return true.
 		 */
-		let strokeHole = false;
+		let strokes = 0;
 
 		if (1 <= hole && hole <= 18) {
 			let holeHdcps = (hole <= 9) ? this.frontHdcps : this.backHdcps;
 			let holeIdx = (hole - 1) % 9;
-			strokeHole = (playerHdcp >= holeHdcps[holeIdx]) ? true : false;
+			
+			strokes = (playerHdcp >= holeHdcps[holeIdx]) ? 1 : 0;
+			strokes += (playerHdcp >= holeHdcps[holeIdx] + 18) ? 1 : 0;
 		}
-		return strokeHole;
+		return strokes;
 	}
 
 	convertHdcps(origHdcps: number[], startHole: number) {

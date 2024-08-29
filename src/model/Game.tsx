@@ -26,6 +26,7 @@ export class Game {
 	private selectPlayers: boolean;
 	private playerIDs: number[];
 	private playerPts: number[][];
+	private lowHdcp;
 	private team1: Team;
 	private team2: Team;
 	
@@ -34,6 +35,7 @@ export class Game {
 		this.selectPlayers = true;
 		this.playerIDs = [];
 		this.playerPts = [];
+		this.lowHdcp = 0;
 		this.team1 = { name: "", ids: [], pts: [] };
 		this.team2 = { name: "", ids: [], pts: [] };
 	}
@@ -137,7 +139,7 @@ export class Game {
 	}
 
 	getNetScore( course:Course18, hole:number, player:Player ) {
-		return ( course.isStrokeHole( hole, player.hdcp ) ) ? player.score[hole - 1] - 1 : player.score[hole - 1];
+		return ( player.score[hole - 1] - course.getStrokesForHole( hole, player.hdcp - this.lowHdcp ) );
 	}
 	
 	getPointScore( score:number, par:number ) {
@@ -146,6 +148,11 @@ export class Game {
 
 	determinePoints( players: Player[], course: Course18, holeNumber: number ) {
 		const holeIdx = holeNumber - 1;
+		
+		// Determne low hdcp among this game's players - so handicaps are relative to 0.
+		this.lowHdcp = 36;
+		this.playerIDs.map( (plyrId: number ) =>
+		  ( this.lowHdcp = ( players[plyrId].hdcp < this.lowHdcp ) ? players[plyrId].hdcp : this.lowHdcp ) );
 		
 		// Determine points for players for current hole based on game type.
 		switch ( this.gameType.name ) {
@@ -262,6 +269,10 @@ export class Game {
 		}
 	}
 	
+    getPlayerPts( plyrID: number ) {
+        return this.playerPts[ plyrID ];
+    }
+    
 	getTeamPoints( theTeam: number, theHole: number ) {
 		// Return total points for theTeam (1 or 2) up to and including theHole.
 		var total = 0;
@@ -304,7 +315,7 @@ export class Game {
 		    // Table row for player scores
 	        html += "<tr><th>" + player.name + "</th>";
 	   	    for ( h = 1;  h <= 18;  h++ ) {
-				let strokeHole = course.isStrokeHole( h, player.hdcp );
+				let strokeHole = course.getStrokesForHole( h, player.hdcp - this.lowHdcp ) > 0;
 				let underPar = ( player.score[h - 1] < course.getPar(h) );
 	            if ( h <= player.score.length ) {
 	   	    	    html += "<th" + (strokeHole || underPar ? 

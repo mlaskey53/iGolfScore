@@ -48,7 +48,7 @@ const Round: React.FC = () => {
   }
   
   const [presentSetScores, dismissSetScores] = useIonModal( SetScoresModal, {
-    modalTitle: "Enter Scores",
+    modalTitle: "Scores",
     hole: hole,
     players: state.players,
     onClose: handleCloseScores,
