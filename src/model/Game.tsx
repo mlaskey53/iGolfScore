@@ -23,6 +23,7 @@ export class Game {
 	public static PointValues = [ 5, 4, 3, 2, 1, 0, 0, 0, 0, 0 ];  // Points for hole-in-one, eagle, birdie, etc.
 	
 	private gameType: GameType;
+	private gameName: string;  // Set as "<Type> (<player names>)"
 	private selectPlayers: boolean;
 	private playerIDs: number[];
 	private playerPts: number[][];
@@ -32,6 +33,7 @@ export class Game {
 	
 	constructor() {
 		this.gameType = Game.Types[ 0 ];
+		this.gameName = this.gameType + " ()";
 		this.selectPlayers = true;
 		this.playerIDs = [];
 		this.playerPts = [];
@@ -40,7 +42,7 @@ export class Game {
 		this.team2 = { name: "", ids: [], pts: [] };
 	}
 
-	setGame( typ = 0 ) {
+	setType( typ = 0 ) {
 		this.gameType = Game.Types[ typ ];
 	}
 
@@ -50,8 +52,12 @@ export class Game {
 			this.playerPts[i] = [];
 		}
 	}
+	
+	setName( players: Player[] ) {
+	    this.gameName = this.gameType.name + " ( " + this.getPlayerNames( players ) + " )";
+	}
 
-	getName() { return this.gameType.name }
+	getName() { return this.gameName }
 	
 	getPlayers() {
 		return this.playerIDs;
@@ -309,7 +315,7 @@ export class Game {
 	   	html += "<td></td><td></td></tr>\n";
 
 	    for ( var plyrId = 0;  plyrId < this.playerIDs.length;  plyrId++ ) {
-		    const player = players[plyrId];
+		    const player = players[ this.playerIDs[plyrId] ];
 		    var frontScore = 0, backScore = 0, frontPts = 0, backPts = 0;
 		    
 		    // Table row for player scores

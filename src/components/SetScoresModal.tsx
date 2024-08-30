@@ -27,7 +27,7 @@ export const SetScoresModal: React.FC<{
           <IonItem>
             <NumInput name={plyr.name} init={ plyr.score[hole - 1] } min={1} max={9}
               setValue={ (val: number) => { plyr.score[hole - 1] = val } }></NumInput>
-            <NumInput name="Bonus" init={ plyr.bonus } min={0} max={9}
+            <NumInput name="Junk" init={ plyr.bonus } min={0} max={9}
               setValue={ (val: number) => { plyr.bonus = val } }></NumInput>
           </IonItem>
           ) )}

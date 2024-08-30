@@ -129,6 +129,7 @@ const Setup: React.FC = () => {
 
   const handleAddGame = ( game: Game ) => {
 	dismissAddGame();
+	game.setName( state.players );
     state.games.push( game );
 	dispatch( { type: "setGames", newval: state.games } );
   }
@@ -217,7 +218,7 @@ const Setup: React.FC = () => {
             { state.games.map( (game: Game, idx: number) => (
 	        <IonRow>
 	          <IonCol size="3"><IonLabel><h3>Game {idx + 1}:</h3></IonLabel></IonCol>
-              <IonCol size="5"><IonLabel><h2>{game.getName()}    ({ game.getPlayerNames(state.players) })</h2></IonLabel></IonCol>
+              <IonCol size="5"><IonLabel><h2>{game.getName()}</h2></IonLabel></IonCol>
             </IonRow>
             ) )}
           </IonGrid>
@@ -229,7 +230,7 @@ const Setup: React.FC = () => {
        <IonLoading isOpen={showWaiting} onDidDismiss={() => setShowWaiting(false)} message={'Processing...'} duration={5000} />
        
        <IonAlert isOpen={showRemoveConfirm} onDidDismiss={() => setShowRemoveConfirm(false)}
-          header={'Remove Player?'} message={"Remove player from Game."}
+          header={'Remove Player?'} message={"Remove player from Round."}
           buttons={[
             { text: 'Cancel', role: 'cancel', cssClass: 'secondary', id: 'cancel-button', handler: () => {} },
             { text: 'OK', id: 'confirm-button', handler: () => { removePlayer(); } }

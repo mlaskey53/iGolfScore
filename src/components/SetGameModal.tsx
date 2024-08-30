@@ -68,7 +68,7 @@ export const SetGameModal = (
         <IonItem>
           {/*<IonLabel><h2>Select Game Type:</h2></IonLabel>*/}
           <IonSelect label="Select Game:" placeholder={Game.Types[0].name} interface="action-sheet"
-              onIonChange={(e) => { game.setGame( e.detail.value ); setGame( game ); 
+              onIonChange={(e) => { game.setType( e.detail.value ); setGame( game ); 
                  setPlayerPrompt( game.getSelectPlayersPrompt( players ) ); setShowSelectPlayers( game.shouldSelectPlayers() ) } } >
             { Game.Types.map( (gameTyp: GameType, idx: number) => (
             <IonSelectOption key={idx} value={idx}>{ gameTyp.name }</IonSelectOption>

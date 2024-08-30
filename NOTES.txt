@@ -33,5 +33,7 @@ Optionally change AndroidManifest.xml for <application ... icon: to created imag
 Adding splash icons: (See https://github.com/ionic-team/capacitor-assets)
 cordova-res android --skip-config --copy
  
-
+Building APK:
+Copy ./local.properties file to android/  (contains setting specifying location of SDK)
+In Android Studio: select Build->Build Signed APK
 

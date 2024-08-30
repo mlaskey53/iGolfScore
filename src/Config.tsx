@@ -1,6 +1,6 @@
 const Config = {
 	appName: "Golf Score",
-	appVersion: "2.2.5",
+	appVersion: "2.2.6",
 	appAuthor: "M. Laskey"
 };
 

@@ -37,7 +37,7 @@ beforeAll( () => {
 
 test( 'Nassau - even w/hdcp', () => {
   const game = new Game();
-  game.setGame( 1 );
+  game.setType( 1 );
   game.setPlayers( [ 0, 1 ] );
   // Set Mike's hdcp and score to even par.
   testState.players[0].hdcp = 0; testState.players[0].score = parsBayLake;
@@ -52,7 +52,7 @@ test( 'Nassau - even w/hdcp', () => {
 
 test( 'Total Points - even w/relative hdcp', () => {
   const game = new Game();
-  game.setGame( 2 );
+  game.setType( 2 );
   game.setPlayers( [ 0, 1 ] );
   // Set Mike's hdcp and score to even par.
   testState.players[0].hdcp = 0; testState.players[0].score = parsBayLake;
@@ -65,7 +65,7 @@ test( 'Total Points - even w/relative hdcp', () => {
 
 test( 'Total Points - even w/full hdcp', () => {
   const game = new Game();
-  game.setGame( 2 );
+  game.setType( 2 );
   game.setPlayers( [ 0, 1 ] );
   // Set Mike's full hdcp and score to even par.
   testState.players[0].hdcp = 8; testState.players[0].score = parsBayLake;
@@ -78,7 +78,7 @@ test( 'Total Points - even w/full hdcp', () => {
 
 test( '9-Points - even w/relative hdcp', () => {
   const game = new Game();
-  game.setGame( 3 );
+  game.setType( 3 );
   game.setPlayers( [ 0, 1, 2 ] );
   // Set players score to even par + hdcp relative to low player.
   testState.players[0].hdcp = 3; testState.players[0].score = scoresPerHdcp( 3, parsBayLake, hdcpsBayLake );
@@ -97,7 +97,7 @@ test( '9-Points - even w/relative hdcp', () => {
 
 test( '9-Points - even w/full hdcp', () => {
   const game = new Game();
-  game.setGame( 3 );
+  game.setType( 3 );
   game.setPlayers( [ 0, 1, 2 ] );
   // Set players score to even par + full hdcp.
   testState.players[0].hdcp = 10; testState.players[0].score = scoresPerHdcp( 3, parsBayLake, hdcpsBayLake );
